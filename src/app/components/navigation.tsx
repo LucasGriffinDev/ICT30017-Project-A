@@ -45,6 +45,9 @@ const Navbar = () => {
                                 </Link>
                             </li>
                         </ul>
+                        <ul>
+                            <img src='./components/5643919.jpg'/>
+                        </ul>
 
                     </div>
                 </div>
