@@ -1,0 +1,26 @@
+[
+    {
+        "ID" : 1,
+        "SKU" : "FK0001",
+        "Name" : "Face Mask",
+        "Category" : "PPE",
+        "Unit" : "Box",
+        "Size" : "50",
+        "Par_Level" : 10,
+        "Stock_Level" : 20,
+        "Threshold" : 5,
+        "Reorder" : false
+    },
+    {
+        "ID" : 2,
+        "SKU" : "TP0001",
+        "Name" : "Toilet Paper",
+        "Category" : "Cleaning",
+        "Unit" : "Box",
+        "Size" : "100",
+        "Par_Level" : 5,
+        "Stock_Level" : 5,
+        "Threshold" : 2,
+        "Reorder" : false
+    }
+]
