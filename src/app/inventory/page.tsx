@@ -19,9 +19,11 @@ interface Item {
 
 export default  function FacilityManagement() {
 
+    // Initialize state for modal visibility
+    const [showModal, setShowModal] = useState(false);
+    
     // Initialize state for data
     const [items, setItems] = useState<Item[]>([]);
-    const [showModal, setShowModal] = useState(false);
     const [newItem, setNewItem] = useState<Item>({
         item_id: 0,
         sku: "",
@@ -38,7 +40,7 @@ export default  function FacilityManagement() {
     // Fetch data from localStorage on component mount
     useEffect(() => {
         // load data from local storage on component mount
-        const storedItems = localStorage.getItem('facilityData');
+        const storedItems = localStorage.getItem('inventoryData');
         if (storedItems) {
             try {
                 const parsedItems = JSON.parse(storedItems);
@@ -82,8 +84,11 @@ export default  function FacilityManagement() {
         // Calculate the next item_id
         const nextItemId = items.length > 0 ? Math.max(...items.map(item => item.item_id)) + 1 : 1;
 
-        // Add the item with the new item_id
-        addItem({ ...newItem, item_id: nextItemId });
+        // Determine if re_order should be true based on threshold
+        const reOrderStatus = newItem.qty_in_stock < newItem.threshold;
+
+        // Add the item with the new item_id and calculated re_order status
+        addItem({ ...newItem, item_id: nextItemId, re_order: reOrderStatus });
 
         // Reset the form
         setNewItem({
@@ -97,7 +102,7 @@ export default  function FacilityManagement() {
             qty_in_stock: 0,
             threshold: 0,
             re_order: false,
-            });
+        });
 
         setShowModal(false);
     }
@@ -115,7 +120,7 @@ export default  function FacilityManagement() {
     }
 
 
-    // Render the component
+    // Render the components
     return (
         <main className="flex min-h-screen flex-col items-center justify-around p-24">
             <h1 className="text-4xl mb-8">Inventory Management System</h1>
