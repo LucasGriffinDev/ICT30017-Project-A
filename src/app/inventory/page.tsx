@@ -21,7 +21,7 @@ export default  function FacilityManagement() {
 
     // Initialize state for modal visibility
     const [showModal, setShowModal] = useState(false);
-    
+
     // Initialize state for data
     const [items, setItems] = useState<Item[]>([]);
     const [newItem, setNewItem] = useState<Item>({
@@ -193,6 +193,7 @@ export default  function FacilityManagement() {
                                     <label htmlFor="sku" className="block text-gray-700 text-sm font-bold mb-2">SKU:</label>
                                     <input
                                         type="text"
+                                        id="sku"
                                         name="sku"
                                         value={newItem.sku}
                                         onChange={handleChange}
@@ -204,6 +205,7 @@ export default  function FacilityManagement() {
                                     <label htmlFor="prod_name" className="block text-gray-700 text-sm font-bold mb-2">Product Name:</label>
                                     <input
                                         type="text"
+                                        id="prod_name"
                                         name="prod_name"
                                         value={newItem.prod_name}
                                         onChange={handleChange}
@@ -215,6 +217,7 @@ export default  function FacilityManagement() {
                                     <label htmlFor="category" className="block text-gray-700 text-sm font-bold mb-2">Category:</label>
                                     <input
                                         type="text"
+                                        id="category"
                                         name="category"
                                         value={newItem.category}
                                         onChange={handleChange}
@@ -226,6 +229,7 @@ export default  function FacilityManagement() {
                                     <label htmlFor="unit" className="block text-gray-700 text-sm font-bold mb-2">Unit:</label>
                                     <input
                                         type="text"
+                                        id="unit"
                                         name="unit"
                                         value={newItem.unit}
                                         onChange={handleChange}
@@ -237,6 +241,7 @@ export default  function FacilityManagement() {
                                     <label htmlFor="size" className="block text-gray-700 text-sm font-bold mb-2">Size:</label>
                                     <input
                                         type="number"
+                                        id="size"
                                         name="size"
                                         value={newItem.size}
                                         onChange={handleChange}
@@ -248,6 +253,7 @@ export default  function FacilityManagement() {
                                     <label htmlFor="par_level" className="block text-gray-700 text-sm font-bold mb-2">Par Level:</label>
                                     <input
                                         type="number"
+                                        id="par_level"
                                         name="par_level"
                                         value={newItem.par_level}
                                         onChange={handleChange}
@@ -259,6 +265,7 @@ export default  function FacilityManagement() {
                                     <label htmlFor="qty_in_stock" className="block text-gray-700 text-sm font-bold mb-2">Quantity in Stock:</label>
                                     <input
                                         type="number"
+                                        id="qty_in_stock"
                                         name="qty_in_stock"
                                         value={newItem.qty_in_stock}
                                         onChange={handleChange}
@@ -270,6 +277,7 @@ export default  function FacilityManagement() {
                                     <label htmlFor="threshold" className="block text-gray-700 text-sm font-bold mb-2">Threshold:</label>
                                     <input
                                         type="number"
+                                        id="threshold"
                                         name="threshold"
                                         value={newItem.threshold}
                                         onChange={handleChange}
