@@ -15,6 +15,20 @@ interface Item {
     threshold: number;
     re_order: boolean;
 }
+
+// Default item for form
+const defaultItem: Item = {
+    item_id: 0,
+    sku: "",
+    prod_name: "",
+    category: "",
+    unit: "",
+    size: 0,
+    par_level: 0,
+    qty_in_stock: 0,
+    threshold: 0,
+    re_order: false,
+};
     
 
 export default  function FacilityManagement() {
@@ -24,18 +38,8 @@ export default  function FacilityManagement() {
 
     // Initialize state for data
     const [items, setItems] = useState<Item[]>([]);
-    const [newItem, setNewItem] = useState<Item>({
-        item_id: 0,
-        sku: "",
-        prod_name: "",
-        category: "",
-        unit: "",
-        size: 0,
-        par_level: 0,
-        qty_in_stock: 0,
-        threshold: 0,
-        re_order: false,
-    });
+    const [newItem, setNewItem] = useState<Item>(defaultItem);
+    
 
     // Fetch data from localStorage on component mount
     useEffect(() => {
@@ -47,28 +51,13 @@ export default  function FacilityManagement() {
                 if (Array.isArray(parsedItems)) {
                     setItems(parsedItems);
                 } else {
-                    console.error("Data in localStorage is not an array");
+                    console.error("Data in local storage is not an array");
                 }
             } catch (e) {
-                console.error("Failed to parse localStorage data", e);
+                console.error("Failed to parse local storage data", e);
             }
         } else {
-            // dummy data if nothing is stored yet
-            const dummyItems: Item[] = [
-                {
-                    item_id: 1,
-                    sku: "AB0001",
-                    prod_name: "Test item",
-                    category: "Test",
-                    unit: "Box",
-                    size: 100,
-                    par_level: 1,
-                    qty_in_stock: 1,
-                    threshold: 0,
-                    re_order: false,
-                },
-            ];
-            setItems(dummyItems);
+            setItems([defaultItem]);
         }
     }, []);
 
@@ -85,100 +74,49 @@ export default  function FacilityManagement() {
         const nextItemId = items.length > 0 ? Math.max(...items.map(item => item.item_id)) + 1 : 1;
 
         // Determine if re_order should be true based on threshold
-        const reOrderStatus = newItem.qty_in_stock < newItem.threshold;
+        const reOrderStatus = newItem.qty_in_stock <= newItem.threshold;
 
         // Add the item with the new item_id and calculated re_order status
         addItem({ ...newItem, item_id: nextItemId, re_order: reOrderStatus });
 
         // Reset the form
-        setNewItem({
-            item_id: 0,
-            sku: "",
-            prod_name: "",
-            category: "",
-            unit: "",
-            size: 0,
-            par_level: 0,
-            qty_in_stock: 0,
-            threshold: 0,
-            re_order: false,
-        });
+        resetForm();
 
         setShowModal(false);
     }
 
     // Add item to the list
     const addItem = (item: Item) => {
-        setItems([...items, item]);
+        const updatedItems = [...items, item];
+        setItems(updatedItems);
         localStorage.setItem('facilityData', JSON.stringify(items));
     }
 
     // Remove item from the list
     const removeItem = (item_id: number) => {
-        setItems(items.filter((item) => item.item_id !== item_id));
+        const updatedItems = items.filter((item) => item.item_id !== item_id);
+        setItems(updatedItems);
         localStorage.setItem('facilityData', JSON.stringify(items));
     }
 
+    // Function to edit an item
+    const editItem = (item_id: number) => {
+        const itemToEdit = items.find(item => item.item_id === item_id);
+        if (itemToEdit) {
+            setNewItem(itemToEdit);
+            setShowModal(true);
+        } else {
+            console.error("Item not found");
+        }
+    }
 
-    // Render the components
-    return (
-        <main className="flex min-h-screen flex-col items-center justify-around p-24">
-            <h1 className="text-4xl mb-8">Inventory Management System</h1>
+    // Function to reset the form
+    const resetForm = () => {
+        setNewItem(defaultItem);
+    }
 
-            <div className="flex space-x-4 mb-4">
-                <button onClick={() => setShowModal(true)} className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-                    Add Item
-                </button>
-            </div>
-
-            {showModal && newItemsForm()}
-
-            <table className="table-auto border-separate border-spacing-1">
-                <thead>
-                    <tr className="bg-blue-500 text-white">
-                        <th className="p-2">Item_ID</th>
-                        <th className="p-2">SKU</th>
-                        <th className="p-2">Prod_Name</th>
-                        <th className="p-2">Category</th>
-                        <th className="p-2">Unit</th>
-                        <th className="p-2">Size</th>
-                        <th className="p-2">Par_Level</th>
-                        <th className="p-2">Qty_in_Stock</th>
-                        <th className="p-2">Threshold</th>
-                        <th className="p-2">Re-order</th>
-                        <th className="p-2">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {items?.map((item: Item) => (
-                        <tr key={item.item_id}>
-                            <td className="p-2">{item.item_id}</td>
-                            <td className="p-2">{item.sku}</td>
-                            <td className="p-2">{item.prod_name}</td>
-                            <td className="p-2">{item.category}</td>
-                            <td className="p-2">{item.unit}</td>
-                            <td className="p-2">{item.size}</td>
-                            <td className="p-2">{item.par_level}</td>
-                            <td className="p-2">{item.qty_in_stock}</td>
-                            <td className="p-2">{item.threshold}</td>
-                            <td className="p-2">{item.re_order ? "Yes" : "No"}</td>
-                            <td className="p-2">
-                                <button
-                                    className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-                                    onClick={() => removeItem(item.item_id)}
-                                >
-                                    Remove
-                                </button>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-        </main>
-    );
-
-    // Modal form for adding new items
-    function newItemsForm() {
+     // Form for adding new items
+     function newItemsForm() {
         return (
             <div className="fixed z-10 inset-0 overflow-y-auto">
                 <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
@@ -300,4 +238,69 @@ export default  function FacilityManagement() {
             </div>
         );
     }
+
+
+    // Render the components
+    return (
+        <main className="flex min-h-screen flex-col items-center justify-start p-4">
+            <h1 className="text-4xl mb-4 mt-4">Inventory Management</h1>
+
+            <div className="flex space-x-4 mb-4">
+                <button onClick={() => setShowModal(true)} className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                    Add Item
+                </button>
+            </div>
+
+            {showModal && newItemsForm()}
+
+            <table className="table-auto w-full text-left">
+                <thead>
+                    <tr className="bg-gray-500 text-white">
+                        <th className="px-4 py-2 font-bold">Item_ID</th>
+                        <th className="px-4 py-2 font-bold">SKU</th>
+                        <th className="px-4 py-2 font-bold">Prod_Name</th>
+                        <th className="px-4 py-2 font-bold">Category</th>
+                        <th className="px-4 py-2 font-bold">Unit</th>
+                        <th className="px-4 py-2 font-bold">Size</th>
+                        <th className="px-4 py-2 font-bold">Par_Level</th>
+                        <th className="px-4 py-2 font-bold">Qty_in_Stock</th>
+                        <th className="px-4 py-2 font-bold">Threshold</th>
+                        <th className="px-4 py-2 font-bold">Re-order</th>
+                        <th className="px-4 py-2 font-bold">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {items?.map((item: Item, index: number) => (
+                        <tr key={item.item_id} className={index % 2 === 0 ? "bg-emerald-100": ""}>
+                            <td className="px-4 py-2">{item.item_id}</td>
+                            <td className="px-4 py-2">{item.sku}</td>
+                            <td className="px-4 py-2">{item.prod_name}</td>
+                            <td className="px-4 py-2">{item.category}</td>
+                            <td className="px-4 py-2">{item.unit}</td>
+                            <td className="px-4 py-2">{item.size}</td>
+                            <td className="px-4 py-2">{item.par_level}</td>
+                            <td className="px-4 py-2">{item.qty_in_stock}</td>
+                            <td className="px-4 py-2">{item.threshold}</td>
+                            <td className="px-4 py-2">{item.re_order ? "Yes" : "No"}</td>
+                            <td className="px-4 py-2 flex justify-center space-x-2 ">
+                            <button
+                                className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded"
+                                onClick={() => editItem(item.item_id)}
+                            >
+                                Edit
+                            </button>
+                            <button
+                                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                                onClick={() => removeItem(item.item_id)}
+                            >
+                                Remove
+                            </button>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </main>
+    );
+   
 }
