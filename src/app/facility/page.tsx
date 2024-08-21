@@ -9,19 +9,19 @@ type RoomMember = {
 };
 
 export default function RoomManagement() {
-  const [RoomList, setRoomList] = useState<RoomMember[]>([]);
+  const [roomList, setRoomList] = useState<RoomMember[]>([]);
 
   useEffect(() => {
     fetch('/api/facility')
       .then((response) => response.json())
-      .then((data) => setRoomList(data));
+      .then((data) => setroomList(data));
   }, []);
 
-  const deleteRoom = (Room: string) => {
+  const deleteRoom = (id: string) => {
     fetch(`/api/facility/${id}`, {
       method: 'DELETE',
     }).then(() => {
-      setRoomList(roomList.filter((Room) => Room.id !== id));
+      setRoomList(roomList.filter((room) => room.id !== id));
     });
   };
 
@@ -39,7 +39,7 @@ export default function RoomManagement() {
       },
       body: JSON.stringify(newRoom),
     }).then((response) => response.json())
-      .then((data) => setRoomList([...RoomList, data]));
+      .then((data) => setRoomList([...roomList, data]));
   };
 
   return (
@@ -55,13 +55,13 @@ export default function RoomManagement() {
           </tr>
         </thead>
         <tbody>
-           {RoomList.map((Room) => (
-            <tr key={Room.id} className="border-t">
-              <td className="px-4 py-2">{Room.ID}</td>
-              <td className="px-4 py-2">{Room.Availability}</td>
-              <td className="px-4 py-2">{Room.Occupant}</td>
+           {roomList.map((room) => (
+            <tr key={room.id} className="border-t">
+              <td className="px-4 py-2">{room.ID}</td>
+              <td className="px-4 py-2">{room.Availability}</td>
+              <td className="px-4 py-2">{room.Occupant}</td>
               <td className="px-4 py-2">
-                <button onClick={() => deleteRoom(Room.id)} className="bg-red-500 text-white p-2 rounded">Delete</button>
+                <button onClick={() => deleteRoom(room.id)} className="bg-red-500 text-white p-2 rounded">Delete</button>
               </td>
             </tr>
       ))}
