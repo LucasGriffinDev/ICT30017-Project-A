@@ -7,10 +7,6 @@ type StaffMember = {
   id: string;
   name: string;
   role: string;
-  qualifications: string;
-  employmentType: string;
-  remuneration: string;
-  training: string;
 };
 
 export default function StaffManagement() {
@@ -40,10 +36,6 @@ export default function StaffManagement() {
       id: prompt('Enter ID:') || '', // Prompt returns null if canceled, so default to an empty string
       name: prompt('Enter Name:') || '',
       role: prompt('Enter Role:') || '',
-      qualifications: prompt('Enter Qualifications:') || '',
-      employmentType: prompt('Enter Employment Type:') || '',
-      remuneration: prompt('Enter Remuneration:') || '',
-      training: prompt('Enter Training:') || '',
     };
     
     fetch('/api/staff', {
