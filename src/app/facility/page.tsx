@@ -17,12 +17,11 @@ export default function RoomManagement() {
       .then((data) => setRoomList(data));
   }, []);
 
-  // Specify that id is a string
-  const deleteRoom = (id: string) => {
-    fetch(`/api/facility/${id}`, {
+  const deleteRoom = (room: string) => {
+    fetch(`/api/facility/${room}`, {
       method: 'DELETE',
     }).then(() => {
-      setRoomList(roomList.filter((room) => room.id !== id));
+      setRoomList(roomList.filter((room) => room.room !== room));
     });
   };
 
@@ -57,12 +56,12 @@ export default function RoomManagement() {
         </thead>
         <tbody>
           {roomList.map((room) => (
-            <tr key={room.id} className="border-t">
+            <tr key={room.room} className="border-t">
               <td className="px-4 py-2">{room.Room}</td>
               <td className="px-4 py-2">{room.Availability}</td>
               <td className="px-4 py-2">{room.Occupant}</td>
               <td className="px-4 py-2">
-                <button onClick={() => deleteRoom(room.id)} className="bg-red-500 text-white p-2 rounded">Delete</button>
+                <button onClick={() => deleteRoom(room.room)} className="bg-red-500 text-white p-2 rounded">Delete</button>
               </td>
             </tr>
           ))}
