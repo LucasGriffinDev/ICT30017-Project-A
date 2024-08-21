@@ -3,49 +3,47 @@
 import React, { useState, useEffect } from 'react';
 
 // Define a type for the staff member objects
-type StaffMember = {
+type RoomMember = {
   Room: string;
   Availability: string;
   Occupant: string;
 };
 
-export default function StaffManagement() {
-  // Specify that staffList is an array of StaffMember objects
-  const [staffList, setStaffList] = useState<StaffMember[]>([]);
+export default function RoomManagement() {
+  const [roomList, setRoomList] = useState<RoomMember[]>([]);
 
   useEffect(() => {
     // Fetch staff data when the component mounts
     fetch('/api/facility')
       .then((response) => response.json())
-      .then((data) => setStaffList(data));
+      .then((data) => setRoomList(data));
   }, []);
 
   // Specify that id is a string
-  const deleteStaff = (id: string) => {
-    fetch(`/api/staff/${id}`, {
+  const deleteRoom = (id: string) => {
+    fetch(`/api/facility/${id}`, {
       method: 'DELETE',
     }).then(() => {
-      // Filter out the staff member with the matching ID
-      setStaffList(staffList.filter((staff) => staff.id !== id));
+      setRoomList(roomList.filter((room) => room.id !== id));
     });
   };
 
-  const addStaff = () => {
+  const addRoom = () => {
     // Ensure the newStaff object conforms to the StaffMember type
-    const newStaff: StaffMember = {
-      id: prompt('Enter Room:') || '', // Prompt returns null if canceled, so default to an empty string
-      name: prompt('Enter Availability:') || '',
+    const newRoom: RoomMember = {
+      Room: prompt('Enter Room:') || '', // Prompt returns null if canceled, so default to an empty string
+      Availability: prompt('Enter Availability:') || '',
       Occupant: prompt('Enter Occupant:') || '',
     };
     
-    fetch('/api/staff', {
+    fetch('/api/facility', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(newStaff),
     }).then((response) => response.json())
-      .then((data) => setStaffList([...staffList, data]));
+      .then((data) => setRoomList([...roomList, data]));
   };
 
   return (
