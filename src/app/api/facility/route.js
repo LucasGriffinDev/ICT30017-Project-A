@@ -29,7 +29,7 @@ export async function POST(request) {
 
 export async function DELETE(request) {
   try {
-    const { room } = await request.json();
+    const { id } = await request.json();
     const data = fs.readFileSync(roomDataPath, 'utf8');
     let roomList = JSON.parse(data);
     roomList = roomList.filter(room => room.id !== id);
