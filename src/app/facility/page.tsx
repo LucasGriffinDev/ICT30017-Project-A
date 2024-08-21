@@ -55,7 +55,7 @@ export default function RoomManagement() {
           </tr>
         </thead>
         <tbody>
-           {roomList.map((room) => (
+           {AoomList.map((room) => (
             <tr key={room.id} className="border-t">
               <td className="px-4 py-2">{room.id}</td>
               <td className="px-4 py-2">{room.Availability}</td>
