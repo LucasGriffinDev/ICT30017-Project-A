@@ -3,13 +3,13 @@
 import React, { useState, useEffect } from 'react';
 
 type RoomMember = {
-  Room: string;
+  id: string;
   Availability: string;
   Occupant: string;
 };
 
 export default function RoomManagement() {
-  const [roomList, setRoomList] = useState<RoomMember[]>([]);
+  const [RoomList, setRoomList] = useState<RoomMember[]>([]);
 
   useEffect(() => {
     fetch('/api/facility')
@@ -17,17 +17,17 @@ export default function RoomManagement() {
       .then((data) => setRoomList(data));
   }, []);
 
-  const deleteRoom = (room: string) => {
+  const deleteRoom = (Room: string) => {
     fetch(`/api/facility/${room}`, {
       method: 'DELETE',
     }).then(() => {
-      setRoomList(roomList.filter((room) => room.room !== room));
+      setRoomList(roomList.filter((Room) => Room.id !== id));
     });
   };
 
   const addRoom = () => {
     const newRoom: RoomMember = {
-      Room: prompt('Enter Room:') || '', // Prompt returns null if canceled, so default to an empty string
+      id: prompt('Enter Room ID:') || '', // Prompt returns null if canceled, so default to an empty string
       Availability: prompt('Enter Availability:') || '',
       Occupant: prompt('Enter Occupant:') || '',
     };
@@ -39,7 +39,7 @@ export default function RoomManagement() {
       },
       body: JSON.stringify(newRoom),
     }).then((response) => response.json())
-      .then((data) => setRoomList([...roomList, data]));
+      .then((data) => setRoomList([...RoomList, data]));
   };
 
   return (
@@ -55,12 +55,12 @@ export default function RoomManagement() {
           </tr>
         </thead>
         <tbody>
-            <tr key={room.room} className="border-t">
-              <td className="px-4 py-2">{room.Room}</td>
-              <td className="px-4 py-2">{room.Availability}</td>
-              <td className="px-4 py-2">{room.Occupant}</td>
+            <tr key={Room.id} className="border-t">
+              <td className="px-4 py-2">{Room.ID}</td>
+              <td className="px-4 py-2">{Room.Availability}</td>
+              <td className="px-4 py-2">{Room.Occupant}</td>
               <td className="px-4 py-2">
-                <button onClick={() => deleteRoom(room.room)} className="bg-red-500 text-white p-2 rounded">Delete</button>
+                <button onClick={() => deleteRoom(Room.id)} className="bg-red-500 text-white p-2 rounded">Delete</button>
               </td>
             </tr>
         </tbody>
