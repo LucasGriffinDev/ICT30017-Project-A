@@ -44,7 +44,7 @@ export default function RoomManagement() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-around p-24">
-      <h1 className="text-4xl">Facility Management</h1>
+      <h1 className="text-4xl">Facility Managements</h1>
       <button onClick={addRoom} className="mt-4 p-2 bg-blue-500 text-white rounded">Add Room</button>
       <table className="table-auto mt-8 w-full text-left">
         <thead>
