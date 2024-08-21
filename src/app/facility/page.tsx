@@ -14,7 +14,7 @@ export default function RoomManagement() {
   useEffect(() => {
     fetch('/api/facility')
       .then((response) => response.json())
-      .then((data) => setroomList(data));
+      .then((data) => setRoomList(data));
   }, []);
 
   const deleteRoom = (id: string) => {
