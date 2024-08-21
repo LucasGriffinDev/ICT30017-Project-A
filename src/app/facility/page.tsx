@@ -55,7 +55,6 @@ export default function RoomManagement() {
           </tr>
         </thead>
         <tbody>
-          {roomList.map((room)) => (
             <tr key={room.room} className="border-t">
               <td className="px-4 py-2">{room.Room}</td>
               <td className="px-4 py-2">{room.Availability}</td>
@@ -64,7 +63,6 @@ export default function RoomManagement() {
                 <button onClick={() => deleteRoom(room.room)} className="bg-red-500 text-white p-2 rounded">Delete</button>
               </td>
             </tr>
-          ))}
         </tbody>
       </table>
     </main>
