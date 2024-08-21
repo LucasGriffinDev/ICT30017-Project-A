@@ -4,9 +4,9 @@ import React, { useState, useEffect } from 'react';
 
 // Define a type for the staff member objects
 type StaffMember = {
-  id: string;
-  name: string;
-  role: string;
+  Room: string;
+  Availability: string;
+  Occupant: string;
 };
 
 export default function StaffManagement() {
@@ -33,9 +33,9 @@ export default function StaffManagement() {
   const addStaff = () => {
     // Ensure the newStaff object conforms to the StaffMember type
     const newStaff: StaffMember = {
-      id: prompt('Enter ID:') || '', // Prompt returns null if canceled, so default to an empty string
-      name: prompt('Enter Name:') || '',
-      role: prompt('Enter Role:') || '',
+      id: prompt('Enter Room:') || '', // Prompt returns null if canceled, so default to an empty string
+      name: prompt('Enter Availability:') || '',
+      Occupant: prompt('Enter Occupant:') || '',
     };
     
     fetch('/api/staff', {
@@ -55,17 +55,17 @@ export default function StaffManagement() {
       <table className="table-auto mt-8 w-full text-left">
         <thead>
           <tr>
-            <th className="px-4 py-2">ID</th>
-            <th className="px-4 py-2">Name</th>
-            <th className="px-4 py-2">Role</th>
+            <th className="px-4 py-2">Room</th>
+            <th className="px-4 py-2">Availability</th>
+            <th className="px-4 py-2">Occupant</th>
           </tr>
         </thead>
         <tbody>
           {staffList.map((staff) => (
             <tr key={staff.id} className="border-t">
-              <td className="px-4 py-2">{staff.id}</td>
-              <td className="px-4 py-2">{staff.name}</td>
-              <td className="px-4 py-2">{staff.role}</td>
+              <td className="px-4 py-2">{staff.Room}</td>
+              <td className="px-4 py-2">{staff.Availability}</td>
+              <td className="px-4 py-2">{staff.Occupant}</td>
               <td className="px-4 py-2">
                 <button onClick={() => deleteStaff(staff.id)} className="bg-red-500 text-white p-2 rounded">Delete</button>
               </td>
