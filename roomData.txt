@@ -1,1 +1,1 @@
-[{"id":"1","Availability":"Yes","role":"fired","Occupant":"Vincent"}]
+[{"id":"1","Availability":"Yes","Occupant":"Vincent"}]
