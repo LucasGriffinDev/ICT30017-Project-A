@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 
-// Define a type for the staff member objects
 type RoomMember = {
   Room: string;
   Availability: string;
@@ -13,7 +12,6 @@ export default function RoomManagement() {
   const [roomList, setRoomList] = useState<RoomMember[]>([]);
 
   useEffect(() => {
-    // Fetch staff data when the component mounts
     fetch('/api/facility')
       .then((response) => response.json())
       .then((data) => setRoomList(data));
@@ -29,7 +27,6 @@ export default function RoomManagement() {
   };
 
   const addRoom = () => {
-    // Ensure the newStaff object conforms to the StaffMember type
     const newRoom: RoomMember = {
       Room: prompt('Enter Room:') || '', // Prompt returns null if canceled, so default to an empty string
       Availability: prompt('Enter Availability:') || '',
@@ -41,7 +38,7 @@ export default function RoomManagement() {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(newStaff),
+      body: JSON.stringify(newRoom),
     }).then((response) => response.json())
       .then((data) => setRoomList([...roomList, data]));
   };
@@ -59,11 +56,11 @@ export default function RoomManagement() {
           </tr>
         </thead>
         <tbody>
-          {staffList.map((room) => (
+          {roomList.map((room) => (
             <tr key={room.id} className="border-t">
-              <td className="px-4 py-2">{staff.Room}</td>
-              <td className="px-4 py-2">{staff.Availability}</td>
-              <td className="px-4 py-2">{staff.Occupant}</td>
+              <td className="px-4 py-2">{room.Room}</td>
+              <td className="px-4 py-2">{room.Availability}</td>
+              <td className="px-4 py-2">{room.Occupant}</td>
               <td className="px-4 py-2">
                 <button onClick={() => deleteRoom(room.id)} className="bg-red-500 text-white p-2 rounded">Delete</button>
               </td>
