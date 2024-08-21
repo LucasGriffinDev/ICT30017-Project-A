@@ -55,7 +55,7 @@ export default function RoomManagement() {
           </tr>
         </thead>
         <tbody>
-          {roomList.map((room) => (
+          {roomList.map((room)) => (
             <tr key={room.room} className="border-t">
               <td className="px-4 py-2">{room.Room}</td>
               <td className="px-4 py-2">{room.Availability}</td>
