@@ -18,7 +18,7 @@ export default function RoomManagement() {
   }, []);
 
   const deleteRoom = (Room: string) => {
-    fetch(`/api/facility/${room}`, {
+    fetch(`/api/facility/${id}`, {
       method: 'DELETE',
     }).then(() => {
       setRoomList(roomList.filter((Room) => Room.id !== id));
