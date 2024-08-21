@@ -29,10 +29,10 @@ export async function POST(request) {
 
 export async function DELETE(request) {
   try {
-    const { id } = await request.json();
+    const { room } = await request.json();
     const data = fs.readFileSync(roomDataPath, 'utf8');
     let roomList = JSON.parse(data);
-    roomList = roomList.filter(room => room.id !== id);
+    roomList = roomList.filter(room => room.room !== room);
     fs.writeFileSync(roomDataPath, JSON.stringify(roomList));
     return NextResponse.json({ message: 'Deleted successfully' });
   } catch (err) {
