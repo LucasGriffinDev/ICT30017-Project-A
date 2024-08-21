@@ -15,7 +15,7 @@ export default function StaffManagement() {
 
   useEffect(() => {
     // Fetch staff data when the component mounts
-    fetch('/api/staff')
+    fetch('/api/facility')
       .then((response) => response.json())
       .then((data) => setStaffList(data));
   }, []);
