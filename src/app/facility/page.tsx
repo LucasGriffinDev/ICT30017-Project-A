@@ -49,7 +49,7 @@ export default function RoomManagement() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-around p-24">
       <h1 className="text-4xl">Facility Management</h1>
-      <button onClick={addStaff} className="mt-4 p-2 bg-blue-500 text-white rounded">Add Staff</button>
+      <button onClick={addRoom} className="mt-4 p-2 bg-blue-500 text-white rounded">Add Room</button>
       <table className="table-auto mt-8 w-full text-left">
         <thead>
           <tr>
@@ -59,13 +59,13 @@ export default function RoomManagement() {
           </tr>
         </thead>
         <tbody>
-          {staffList.map((staff) => (
-            <tr key={staff.id} className="border-t">
+          {staffList.map((room) => (
+            <tr key={room.id} className="border-t">
               <td className="px-4 py-2">{staff.Room}</td>
               <td className="px-4 py-2">{staff.Availability}</td>
               <td className="px-4 py-2">{staff.Occupant}</td>
               <td className="px-4 py-2">
-                <button onClick={() => deleteStaff(staff.id)} className="bg-red-500 text-white p-2 rounded">Delete</button>
+                <button onClick={() => deleteRoom(room.id)} className="bg-red-500 text-white p-2 rounded">Delete</button>
               </td>
             </tr>
           ))}
