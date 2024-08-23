@@ -39,6 +39,9 @@ export default  function FacilityManagement() {
     // Initialize state for data
     const [items, setItems] = useState<Item[]>([]);
     const [newItem, setNewItem] = useState<Item>(defaultItem);
+
+    // Initialize state for edit mode
+    const [isEditMode, setIsEditMode] = useState(false);
     
 
     // Fetch data from localStorage on component mount
@@ -66,22 +69,32 @@ export default  function FacilityManagement() {
         setNewItem({ ...newItem, [e.target.name]: e.target.value });
     }
 
+    // Calculate the re_order status
+    const calculateReOrderStatus = (item: Item) => {
+        return item.qty_in_stock <= item.threshold;
+    }
+
     // handle form submission
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+
         e.preventDefault();
- 
-        // Calculate the next item_id
-        const nextItemId = items.length > 0 ? Math.max(...items.map(item => item.item_id)) + 1 : 1;
+         // Calculate the re_order status
+         const reOrderStatus = calculateReOrderStatus(newItem);
+        
+        if (isEditMode) {
+            // Update the item
+            updateItem({ ...newItem, re_order: reOrderStatus });
+        } else {
+            // Add the item
+            // Calculate the next item_id
+            const nextItemId = items.length > 0 ? Math.max(...items.map(item => item.item_id)) + 1 : 1;
 
-        // Determine if re_order should be true based on threshold
-        const reOrderStatus = newItem.qty_in_stock <= newItem.threshold;
-
-        // Add the item with the new item_id and calculated re_order status
-        addItem({ ...newItem, item_id: nextItemId, re_order: reOrderStatus });
+            // Add the item with the new item_id and calculated re_order status
+            addItem({ ...newItem, item_id: nextItemId, re_order: reOrderStatus });
+        }
 
         // Reset the form
         resetForm();
-
         setShowModal(false);
     }
 
@@ -89,18 +102,19 @@ export default  function FacilityManagement() {
     const addItem = (item: Item) => {
         const updatedItems = [...items, item];
         setItems(updatedItems);
-        localStorage.setItem('facilityData', JSON.stringify(items));
+        localStorage.setItem('inventoryData', JSON.stringify(updatedItems));
     }
 
     // Remove item from the list
     const removeItem = (item_id: number) => {
         const updatedItems = items.filter((item) => item.item_id !== item_id);
         setItems(updatedItems);
-        localStorage.setItem('facilityData', JSON.stringify(items));
+        localStorage.setItem('inventoryData', JSON.stringify(updatedItems));
     }
 
     // Function to edit an item
     const editItem = (item_id: number) => {
+        setIsEditMode(true);
         const itemToEdit = items.find(item => item.item_id === item_id);
         if (itemToEdit) {
             setNewItem(itemToEdit);
@@ -110,8 +124,18 @@ export default  function FacilityManagement() {
         }
     }
 
+    // Function to update an item
+    const updateItem = (updatedItem: Item) => {
+        const updatedItems = items.map(item => 
+            item.item_id === updatedItem.item_id ? updatedItem : item
+        );
+        setItems(updatedItems);
+        localStorage.setItem('inventoryData', JSON.stringify(updatedItems));
+    }
+
     // Function to reset the form
     const resetForm = () => {
+        setIsEditMode(false);
         setNewItem(defaultItem);
     }
 
@@ -223,10 +247,17 @@ export default  function FacilityManagement() {
                                         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                     />
                                 </div>
-                                <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                                <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex  sm:justify-end space-x-2">
+                                    {!isEditMode && (
                                     <button type="submit" className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
                                         Add Item
                                     </button>
+                                    )}
+                                    {isEditMode && (
+                                    <button type="submit" className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded">
+                                        Update Item
+                                    </button>
+                                    )}
                                     <button onClick={() => setShowModal(false)} className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
                                         Cancel
                                     </button>
