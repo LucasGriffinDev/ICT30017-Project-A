@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Slider from 'react-slick';
+import DynamicTable from '../components/Table'; // Adjust the path based on your folder structure
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 
@@ -154,53 +155,60 @@ export default function FacilityManagement() {
                 <h2 className="text-2xl font-bold mb-4">
                   {member.personalDetails.name}
                 </h2>
-                <p>
-                  <strong>Age:</strong> {member.personalDetails.age}
-                </p>
-                <p>
-                  <strong>Gender:</strong> {member.personalDetails.gender}
-                </p>
+
+                <DynamicTable
+                  data={[
+                    { Attribute: 'Name', Value: member.personalDetails.name },
+                    { Attribute: 'Age', Value: member.personalDetails.age },
+                    {
+                      Attribute: 'Gender',
+                      Value: member.personalDetails.gender,
+                    },
+                  ]}
+                />
+
                 <div className="mt-4">
                   <h3 className="text-xl font-semibold">Care Plans:</h3>
-                  <ul className="list-disc pl-5">
-                    {member.carePlans.map((plan, idx) => (
-                      <li key={idx}>
-                        {plan.date}: {plan.plan}
-                      </li>
-                    ))}
-                  </ul>
+                  <DynamicTable
+                    data={member.carePlans.map((plan) => ({
+                      Date: plan.date,
+                      Plan: plan.plan,
+                    }))}
+                  />
                 </div>
+
                 <div className="mt-4">
                   <h3 className="text-xl font-semibold">Medications:</h3>
-                  <ul className="list-disc pl-5">
-                    {member.medications.map((medication, idx) => (
-                      <li key={idx}>
-                        {medication.name}: {medication.dosage}
-                      </li>
-                    ))}
-                  </ul>
+                  <DynamicTable
+                    data={member.medications.map((medication) => ({
+                      Name: medication.name,
+                      Dosage: medication.dosage,
+                    }))}
+                  />
                 </div>
+
                 <div className="mt-4">
                   <h3 className="text-xl font-semibold">Family Contacts:</h3>
-                  <ul className="list-disc pl-5">
-                    {member.familyContacts.map((contact, idx) => (
-                      <li key={idx}>
-                        {contact.relation}: {contact.name} - {contact.contact}
-                      </li>
-                    ))}
-                  </ul>
+                  <DynamicTable
+                    data={member.familyContacts.map((contact) => ({
+                      Relation: contact.relation,
+                      Name: contact.name,
+                      Contact: contact.contact,
+                    }))}
+                  />
                 </div>
+
                 <div className="mt-4">
                   <h3 className="text-xl font-semibold">
                     Accessibility Requirements:
                   </h3>
-                  <ul className="list-disc pl-5">
-                    {member.accessibilityRequirements.map(
-                      (requirement, idx) => (
-                        <li key={idx}>{requirement.requirement}</li>
-                      )
+                  <DynamicTable
+                    data={member.accessibilityRequirements.map(
+                      (requirement) => ({
+                        Requirement: requirement.requirement,
+                      })
                     )}
-                  </ul>
+                  />
                 </div>
               </div>
             </div>
