@@ -122,7 +122,7 @@ export default function StaffManagement() {
               <td className="px-4 py-2">{staff.training}</td>
               <td className="px-4 py-2 flex items-center space-x-2">
                 <button onClick={() => modifyStaff(staff)} className="bg-yellow-500 text-white p-1 rounded text-sm px-2">Edit</button>
-                <button onClick={() => deleteStaff(staff.id)} className="bg-red-500 text-white p-1 rounded text-sm px-2">Delete</button>
+                <button onClick={() => deleteStaff(staff.id)} className="bg-red-500 text-white p-1 rounded text-sm px-2">Remove</button>
               </td>
             </tr>
           ))}
