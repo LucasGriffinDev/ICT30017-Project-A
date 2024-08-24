@@ -1,8 +1,8 @@
-"use client"; // Add this at the top
+"use client";
 
 import React, { useState, useEffect } from 'react';
+import nextId from 'react-id-generator';
 
-// Define a type for the staff member objects
 type StaffMember = {
   id: string;
   name: string;
@@ -13,64 +13,101 @@ type StaffMember = {
   training: string;
 };
 
+const generateRandomID = (): string => {
+  return nextId();
+};
+
 export default function StaffManagement() {
-  // Specify that staffList is an array of StaffMember objects
   const [staffList, setStaffList] = useState<StaffMember[]>([]);
+  const [editingStaff, setEditingStaff] = useState<StaffMember | null>(null);
 
   useEffect(() => {
-    // Fetch staff data when the component mounts
     fetch('/api/staff')
       .then((response) => response.json())
-      .then((data) => setStaffList(data));
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setStaffList(data);
+        } else {
+          console.error("Expected an array but got:", data);
+          setStaffList([]); 
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching staff data:", error);
+        setStaffList([]);
+      });
   }, []);
 
-  // Specify that id is a string
   const deleteStaff = (id: string) => {
     fetch(`/api/staff/${id}`, {
       method: 'DELETE',
     }).then(() => {
-      // Filter out the staff member with the matching ID
       setStaffList(staffList.filter((staff) => staff.id !== id));
     });
   };
 
   const addStaff = () => {
-    // Ensure the newStaff object conforms to the StaffMember type
     const newStaff: StaffMember = {
-      id: prompt('Enter ID:') || '', // Prompt returns null if canceled, so default to an empty string
-      name: prompt('Enter Name:') || '',
-      role: prompt('Enter Role:') || '',
-      qualifications: prompt('Enter Qualifications:') || '',
-      employmentType: prompt('Enter Employment Type:') || '',
-      remuneration: prompt('Enter Remuneration:') || '',
-      training: prompt('Enter Training:') || '',
+      id: generateRandomID(),
+      name: prompt('Enter Name:') || 'None',
+      role: prompt('Enter Role:') || 'None',
+      qualifications: prompt('Enter Qualifications:') || 'None',
+      employmentType: prompt('Enter Employment Type:') || 'None',
+      remuneration: prompt('Enter Remuneration:') || 'None',
+      training: prompt('Enter Training:') || 'None',
     };
-    
+
     fetch('/api/staff', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(newStaff),
-    }).then((response) => response.json())
-      .then((data) => setStaffList([...staffList, data]));
+    })
+    .then((response) => response.json())
+    .then((data) => setStaffList([...staffList, data]))
+    .catch((error) => console.error("Error adding new staff:", error));
+  };
+
+  const modifyStaff = (staff: StaffMember) => {
+    const updatedStaff = {
+      ...staff,
+      name: prompt('Enter Name:', staff.name) || staff.name,
+      role: prompt('Enter Role:', staff.role) || staff.role,
+      qualifications: prompt('Enter Qualifications:', staff.qualifications) || staff.qualifications,
+      employmentType: prompt('Enter Employment Type:', staff.employmentType) || staff.employmentType,
+      remuneration: prompt('Enter Remuneration:', staff.remuneration) || staff.remuneration,
+      training: prompt('Enter Training:', staff.training) || staff.training,
+    };
+
+    fetch(`/api/staff/${staff.id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(updatedStaff),
+    })
+    .then(() => {
+      setStaffList(staffList.map((item) => (item.id === staff.id ? updatedStaff : item)));
+    })
+    .catch((error) => console.error("Error modifying staff:", error));
   };
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-around p-24">
-      <h1 className="text-4xl">Staff Management</h1>
+      <h2 className="text-2xl font-bold mb-4">Manage Your Staff</h2>
       <button onClick={addStaff} className="mt-4 p-2 bg-blue-500 text-white rounded">Add Staff</button>
       <table className="table-auto mt-8 w-full text-left">
-        <thead>
+        <thead className="bg-emerald-600">
           <tr>
-            <th className="px-4 py-2">ID</th>
-            <th className="px-4 py-2">Name</th>
-            <th className="px-4 py-2">Role</th>
-            <th className="px-4 py-2">Qualifications</th>
-            <th className="px-4 py-2">Employment Type</th>
-            <th className="px-4 py-2">Remuneration</th>
-            <th className="px-4 py-2">Training</th>
-            <th className="px-4 py-2">Actions</th>
+            <th className="px-4 py-2 text-white">ID</th>
+            <th className="px-4 py-2 text-white">Name</th>
+            <th className="px-4 py-2 text-white">Role</th>
+            <th className="px-4 py-2 text-white">Qualifications</th>
+            <th className="px-4 py-2 text-white">Employment Type</th>
+            <th className="px-4 py-2 text-white">Remuneration</th>
+            <th className="px-4 py-2 text-white">Training</th>
+            <th className="px-4 py-2 text-white">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -83,8 +120,9 @@ export default function StaffManagement() {
               <td className="px-4 py-2">{staff.employmentType}</td>
               <td className="px-4 py-2">{staff.remuneration}</td>
               <td className="px-4 py-2">{staff.training}</td>
-              <td className="px-4 py-2">
-                <button onClick={() => deleteStaff(staff.id)} className="bg-red-500 text-white p-2 rounded">Delete</button>
+              <td className="px-4 py-2 flex items-center space-x-2">
+                <button onClick={() => modifyStaff(staff)} className="bg-yellow-500 text-white p-1 rounded text-sm px-2">Edit</button>
+                <button onClick={() => deleteStaff(staff.id)} className="bg-red-500 text-white p-1 rounded text-sm px-2">Delete</button>
               </td>
             </tr>
           ))}
@@ -93,4 +131,3 @@ export default function StaffManagement() {
     </main>
   );
 }
-
