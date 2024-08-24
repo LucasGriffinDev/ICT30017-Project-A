@@ -128,7 +128,7 @@ export default function FacilityManagement() {
   };
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-start p-4">
+    <main className="flex-grow flex flex-col items-center justify-center p-4">
       <h1 className="text-4xl mb-4 mt-4">Member Management Page</h1>
 
       <div className="flex space-x-4 mb-4">
