@@ -1,5 +1,5 @@
 "use client";
-//11
+
 import React, { useState, useEffect } from "react";
 
 interface Booking {
@@ -7,13 +7,15 @@ interface Booking {
   date: string;
   time: string;
   duration: string;
+  staff: string;
 }
 
-export default function FacilityManagement() {
+export default function ServiceManagement() {
   const [service, setService] = useState<string>("");
   const [date, setDate] = useState<string>("");
   const [time, setTime] = useState<string>("");
   const [duration, setDuration] = useState<string>("");
+  const [staff, setStaff] = useState<string>("");
   const [bookings, setBookings] = useState<Booking[]>([]);
 
   useEffect(() => {
@@ -23,6 +25,8 @@ export default function FacilityManagement() {
     }
   }, []);
 
+  const staffOptions = ["John Doe", "Jane Smith", "Mike Johnson"];
+
   const handleBooking = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const bookingData: Booking = {
@@ -30,6 +34,7 @@ export default function FacilityManagement() {
       date,
       time,
       duration,
+      staff,
     };
 
     try {
@@ -43,10 +48,33 @@ export default function FacilityManagement() {
     }
   };
 
+  const calculatePerformanceMetrics = () => {
+    const serviceCount = bookings.reduce((acc, booking) => {
+      acc[booking.service] = (acc[booking.service] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+
+    const averageDuration = bookings.reduce((acc, booking) => {
+      acc[booking.service] =
+        (acc[booking.service] || 0) + parseInt(booking.duration);
+      return acc;
+    }, {} as Record<string, number>);
+
+    for (let service in averageDuration) {
+      averageDuration[service] =
+        averageDuration[service] / serviceCount[service];
+    }
+
+    return { serviceCount, averageDuration };
+  };
+
+  const { serviceCount, averageDuration } = calculatePerformanceMetrics();
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-around p-24">
-      <h1 className="text-4xl mb-6">Facility Management</h1>
+      <h1 className="text-4xl mb-6">Service Management</h1>
 
+      {/* Service Catalogue */}
       <section className="w-full max-w-4xl mb-8 p-4 border border-gray-300 rounded-lg">
         <h2 className="text-2xl mb-4">Service Catalogue</h2>
         <p>Details about the various services offered.</p>
@@ -65,6 +93,7 @@ export default function FacilityManagement() {
         </p>
       </section>
 
+      {/* Booking Form */}
       <section className="w-full max-w-4xl mb-8 p-4 border border-gray-300 rounded-lg">
         <h2 className="text-2xl mb-4">Book a Service</h2>
         <form onSubmit={handleBooking}>
@@ -87,6 +116,27 @@ export default function FacilityManagement() {
                 Personal Care Assistant
               </option>
               <option value="Activity Coordinator">Activity Coordinator</option>
+            </select>
+          </div>
+          <div className="mb-4">
+            <label
+              className="block text-gray-700 text-sm font-bold mb-2"
+              htmlFor="staff"
+            >
+              Staff
+            </label>
+            <select
+              id="staff"
+              value={staff}
+              onChange={(e) => setStaff(e.target.value)}
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            >
+              <option value="">Select a staff member</option>
+              {staffOptions.map((staff, index) => (
+                <option key={index} value={staff}>
+                  {staff}
+                </option>
+              ))}
             </select>
           </div>
           <div className="mb-4">
@@ -144,30 +194,50 @@ export default function FacilityManagement() {
         </form>
       </section>
 
+      {/* Current Bookings */}
       <section className="w-full max-w-4xl mb-8 p-4 border border-gray-300 rounded-lg">
         <h2 className="text-2xl mb-4">Current Bookings</h2>
-        {bookings.length > 0 ? (
-          <ul>
-            {bookings.map((booking, index) => (
-              <li key={index} className="mb-2">
-                <p>
-                  <b>Service:</b> {booking.service}
-                </p>
-                <p>
-                  <b>Date:</b> {booking.date}
-                </p>
-                <p>
-                  <b>Time:</b> {booking.time}
-                </p>
-                <p>
-                  <b>Duration:</b> {booking.duration} hours
-                </p>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p>No bookings available.</p>
-        )}
+        <ul>
+          {bookings.map((booking, index) => (
+            <li key={index} className="mb-2">
+              <p>
+                <b>Service:</b> {booking.service}
+              </p>
+              <p>
+                <b>Date:</b> {booking.date}
+              </p>
+              <p>
+                <b>Time:</b> {booking.time}
+              </p>
+              <p>
+                <b>Duration:</b> {booking.duration} hours
+              </p>
+              <p>
+                <b>Staff:</b> {booking.staff}
+              </p>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      {/* Service Performance Tracking */}
+      <section className="w-full max-w-4xl mb-8 p-4 border border-gray-300 rounded-lg">
+        <h2 className="text-2xl mb-4">Service Performance Tracking</h2>
+        <ul>
+          {Object.keys(serviceCount).map((service) => (
+            <li key={service}>
+              <p>
+                <b>Service:</b> {service}
+              </p>
+              <p>
+                <b>Bookings:</b> {serviceCount[service]}
+              </p>
+              <p>
+                <b>Average Duration:</b> {averageDuration[service]} hours
+              </p>
+            </li>
+          ))}
+        </ul>
       </section>
     </main>
   );
