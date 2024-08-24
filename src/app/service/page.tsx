@@ -1,6 +1,6 @@
-"use client";
+'use client';
 //11
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 
 interface Booking {
   service: string;
@@ -10,14 +10,14 @@ interface Booking {
 }
 
 export default function FacilityManagement() {
-  const [service, setService] = useState<string>("");
-  const [date, setDate] = useState<string>("");
-  const [time, setTime] = useState<string>("");
-  const [duration, setDuration] = useState<string>("");
+  const [service, setService] = useState<string>('');
+  const [date, setDate] = useState<string>('');
+  const [time, setTime] = useState<string>('');
+  const [duration, setDuration] = useState<string>('');
   const [bookings, setBookings] = useState<Booking[]>([]);
 
   useEffect(() => {
-    const savedBookings = localStorage.getItem("bookingData");
+    const savedBookings = localStorage.getItem('bookingData');
     if (savedBookings) {
       setBookings(JSON.parse(savedBookings));
     }
@@ -34,18 +34,18 @@ export default function FacilityManagement() {
 
     try {
       const updatedBookings = [...bookings, bookingData];
-      localStorage.setItem("bookingData", JSON.stringify(updatedBookings));
+      localStorage.setItem('bookingData', JSON.stringify(updatedBookings));
       setBookings(updatedBookings);
-      alert("Booking saved to local storage");
+      alert('Booking saved to local storage');
     } catch (error) {
-      console.error("Error:", error);
-      alert("Error saving booking");
+      console.error('Error:', error);
+      alert('Error saving booking');
     }
   };
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-around p-24">
-      <h1 className="text-4xl mb-6">Facility Management</h1>
+      <h1 className="text-4xl mb-6">Service Management</h1>
 
       <section className="w-full max-w-4xl mb-8 p-4 border border-gray-300 rounded-lg">
         <h2 className="text-2xl mb-4">Service Catalogue</h2>
