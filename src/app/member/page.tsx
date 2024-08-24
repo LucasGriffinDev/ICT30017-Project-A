@@ -1,74 +1,78 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import DynamicTable from '../components/Table'; // Ensure the path is correct
+import Slider from 'react-slick';
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
 
 export default function FacilityManagement() {
-  const [data, setData] = useState({
-    personalDetails: {},
-    carePlans: [],
-    medications: [],
-    familyContacts: [],
-    accessibilityRequirements: [],
-  });
+  const [members, setMembers] = useState<any[]>([]); // Ensure members is initialised as an empty array
 
   useEffect(() => {
     const storedData = localStorage.getItem('facilityData');
     if (storedData) {
-      setData(JSON.parse(storedData));
+      try {
+        const parsedData = JSON.parse(storedData);
+        setMembers(Array.isArray(parsedData) ? parsedData : []); // Ensure parsedData is an array
+      } catch (error) {
+        console.error('Error parsing stored data:', error);
+        setMembers([]); // Fallback to an empty array if parsing fails
+      }
     } else {
-      const dummyData = {
-        personalDetails: {
-          name: 'John Doe',
-          age: 85,
-          gender: 'Male',
+      const dummyData = [
+        {
+          personalDetails: {
+            name: 'John Doe',
+            age: 85,
+            gender: 'Male',
+          },
+          carePlans: [
+            {
+              date: '2024-08-01',
+              plan: 'Daily physiotherapy and a balanced diet',
+            },
+            {
+              date: '2024-08-02',
+              plan: 'Weekly mental health check-up and light exercises',
+            },
+          ],
+          medications: [
+            {
+              name: 'Aspirin',
+              dosage: '100mg daily',
+            },
+            {
+              name: 'Metformin',
+              dosage: '500mg twice daily',
+            },
+          ],
+          familyContacts: [
+            {
+              relation: 'Son',
+              name: 'Michael Doe',
+              contact: '+61 400 000 000',
+            },
+            {
+              relation: 'Daughter',
+              name: 'Emily Doe',
+              contact: '+61 400 000 001',
+            },
+          ],
+          accessibilityRequirements: [
+            { requirement: 'Wheelchair access required' },
+            { requirement: 'Room on ground floor' },
+          ],
         },
-        carePlans: [
-          {
-            date: '2024-08-01',
-            plan: 'Daily physiotherapy and a balanced diet',
-          },
-          {
-            date: '2024-08-02',
-            plan: 'Weekly mental health check-up and light exercises',
-          },
-        ],
-        medications: [
-          {
-            name: 'Aspirin',
-            dosage: '100mg daily',
-          },
-          {
-            name: 'Metformin',
-            dosage: '500mg twice daily',
-          },
-        ],
-        familyContacts: [
-          {
-            relation: 'Son',
-            name: 'Michael Doe',
-            contact: '+61 400 000 000',
-          },
-          {
-            relation: 'Daughter',
-            name: 'Emily Doe',
-            contact: '+61 400 000 001',
-          },
-        ],
-        accessibilityRequirements: [
-          { requirement: 'Wheelchair access required' },
-          { requirement: 'Room on ground floor' },
-        ],
-      };
+      ];
 
       localStorage.setItem('facilityData', JSON.stringify(dummyData));
-      setData(dummyData);
+      setMembers(dummyData);
     }
   }, []);
 
-  const saveData = (newData: any) => {
+  const saveData = (newData: any[]) => {
     localStorage.setItem('facilityData', JSON.stringify(newData));
-    setData(newData);
+    setMembers(newData);
   };
 
   const addNewMember = () => {
@@ -103,30 +107,23 @@ export default function FacilityManagement() {
       ],
     };
 
-    const updatedData = {
-      ...data,
-      personalDetails: newMember.personalDetails,
-      carePlans: [...data.carePlans, ...newMember.carePlans],
-      medications: [...data.medications, ...newMember.medications],
-      familyContacts: [...data.familyContacts, ...newMember.familyContacts],
-      accessibilityRequirements: [
-        ...data.accessibilityRequirements,
-        ...newMember.accessibilityRequirements,
-      ],
-    };
+    const updatedData = [...members, newMember];
 
     saveData(updatedData);
   };
 
   const clearData = () => {
     localStorage.removeItem('facilityData');
-    setData({
-      personalDetails: {},
-      carePlans: [],
-      medications: [],
-      familyContacts: [],
-      accessibilityRequirements: [],
-    });
+    setMembers([]);
+  };
+
+  const settings = {
+    dots: true,
+    infinite: false,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    arrows: true,
   };
 
   return (
@@ -150,44 +147,65 @@ export default function FacilityManagement() {
       </div>
 
       <div className="w-full max-w-4xl">
-        <DynamicTable
-          data={[
-            { Category: 'Name', Details: data.personalDetails.name || 'N/A' },
-            { Category: 'Age', Details: data.personalDetails.age || 'N/A' },
-            {
-              Category: 'Gender',
-              Details: data.personalDetails.gender || 'N/A',
-            },
-          ]}
-        />
-
-        <DynamicTable
-          data={data.carePlans.map((plan) => ({
-            Date: plan.date,
-            Plan: plan.plan,
-          }))}
-        />
-
-        <DynamicTable
-          data={data.medications.map((medication) => ({
-            Name: medication.name,
-            Dosage: medication.dosage,
-          }))}
-        />
-
-        <DynamicTable
-          data={data.familyContacts.map((contact) => ({
-            Relation: contact.relation,
-            Name: contact.name,
-            Contact: contact.contact,
-          }))}
-        />
-
-        <DynamicTable
-          data={data.accessibilityRequirements.map((requirement) => ({
-            Requirement: requirement.requirement,
-          }))}
-        />
+        <Slider {...settings}>
+          {members.map((member, index) => (
+            <div key={index} className="p-4">
+              <div className="bg-white shadow-lg rounded-lg p-6">
+                <h2 className="text-2xl font-bold mb-4">
+                  {member.personalDetails.name}
+                </h2>
+                <p>
+                  <strong>Age:</strong> {member.personalDetails.age}
+                </p>
+                <p>
+                  <strong>Gender:</strong> {member.personalDetails.gender}
+                </p>
+                <div className="mt-4">
+                  <h3 className="text-xl font-semibold">Care Plans:</h3>
+                  <ul className="list-disc pl-5">
+                    {member.carePlans.map((plan, idx) => (
+                      <li key={idx}>
+                        {plan.date}: {plan.plan}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="mt-4">
+                  <h3 className="text-xl font-semibold">Medications:</h3>
+                  <ul className="list-disc pl-5">
+                    {member.medications.map((medication, idx) => (
+                      <li key={idx}>
+                        {medication.name}: {medication.dosage}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="mt-4">
+                  <h3 className="text-xl font-semibold">Family Contacts:</h3>
+                  <ul className="list-disc pl-5">
+                    {member.familyContacts.map((contact, idx) => (
+                      <li key={idx}>
+                        {contact.relation}: {contact.name} - {contact.contact}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="mt-4">
+                  <h3 className="text-xl font-semibold">
+                    Accessibility Requirements:
+                  </h3>
+                  <ul className="list-disc pl-5">
+                    {member.accessibilityRequirements.map(
+                      (requirement, idx) => (
+                        <li key={idx}>{requirement.requirement}</li>
+                      )
+                    )}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          ))}
+        </Slider>
       </div>
     </main>
   );
