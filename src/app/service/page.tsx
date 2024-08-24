@@ -73,6 +73,7 @@ export default function ServiceManagement() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-around p-24">
       <h1 className="text-4xl mb-6">Service Management</h1>
+      <h1 className="text-4xl mb-6">Service Management</h1>
 
       {/* Service Catalogue */}
       <section className="w-full max-w-4xl mb-8 p-4 border border-gray-300 rounded-lg">
