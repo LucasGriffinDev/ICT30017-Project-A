@@ -42,6 +42,12 @@ export default  function FacilityManagement() {
 
     // Initialize state for edit mode
     const [isEditMode, setIsEditMode] = useState(false);
+
+    // Initialise state for form errors
+    const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});   
+
+    const validCategories = ["Cleaning", "PPE", "Stationary", "Medicine", "Incontinence", "Other"];
+    const validUnits = ["Each", "Box", "Case"];
     
 
     // Fetch data from localStorage on component mount
@@ -65,9 +71,44 @@ export default  function FacilityManagement() {
     }, []);
 
     // Save data to localStorage when items change
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         setNewItem({ ...newItem, [e.target.name]: e.target.value });
+
     }
+
+    // Validate the form
+    const validateForm = () => {
+        let formErrors: { [key: string]: string } = {};
+
+        // SKU validation
+        if (!/^[A-Za-z0-9]{3,10}$/.test(newItem.sku)) {
+            formErrors.sku = "SKU must be alphanumeric and 3-10 characters long.";
+        }
+
+        // Size validation
+        if (newItem.size <= 0) {
+            formErrors.size = "Size must be a positive number.";
+        }
+
+        // Par Level validation
+        if (newItem.par_level < 0) {
+            formErrors.par_level = "Par Level cannot be negative.";
+        }
+
+        // Quantity in Stock validation
+        if (newItem.qty_in_stock < 0) {
+            formErrors.qty_in_stock = "Quantity in Stock cannot be negative.";
+        }
+
+        // Threshold validation
+        if (newItem.threshold < 0) {
+            formErrors.threshold = "Threshold cannot be negative.";
+        }
+
+        setFormErrors(formErrors);
+        return Object.keys(formErrors).length === 0;
+
+    };
 
     // Calculate the re_order status
     const calculateReOrderStatus = (item: Item) => {
@@ -76,26 +117,30 @@ export default  function FacilityManagement() {
 
     // handle form submission
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-
+        // Prevent the default form submission
         e.preventDefault();
-         // Calculate the re_order status
-         const reOrderStatus = calculateReOrderStatus(newItem);
-        
-        if (isEditMode) {
-            // Update the item
-            updateItem({ ...newItem, re_order: reOrderStatus });
-        } else {
-            // Add the item
-            // Calculate the next item_id
-            const nextItemId = items.length > 0 ? Math.max(...items.map(item => item.item_id)) + 1 : 1;
 
-            // Add the item with the new item_id and calculated re_order status
-            addItem({ ...newItem, item_id: nextItemId, re_order: reOrderStatus });
+        // Check if the form is valid
+        if (validateForm()) {
+            // Calculate the re_order status
+            const reOrderStatus = calculateReOrderStatus(newItem);
+            
+            if (isEditMode) {
+                // Update the item
+                updateItem({ ...newItem, re_order: reOrderStatus });
+            } else {
+                // Add the item
+                // Calculate the next item_id
+                const nextItemId = items.length > 0 ? Math.max(...items.map(item => item.item_id)) + 1 : 1;
+
+                // Add the item with the new item_id and calculated re_order status
+                addItem({ ...newItem, item_id: nextItemId, re_order: reOrderStatus });
+            }
+
+            // Reset the form
+            resetForm();
+            setShowModal(false);
         }
-
-        // Reset the form
-        resetForm();
-        setShowModal(false);
     }
 
     // Add item to the list
@@ -137,6 +182,7 @@ export default  function FacilityManagement() {
     const resetForm = () => {
         setIsEditMode(false);
         setNewItem(defaultItem);
+        setFormErrors({});
     }
 
      // Form for adding new items
@@ -162,6 +208,7 @@ export default  function FacilityManagement() {
                                         required
                                         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                     />
+                                    {formErrors.sku && <p className="text-red-500 text-xs italic">{formErrors.sku}</p>}
                                 </div>
                                 <div className="mb-4">
                                     <label htmlFor="prod_name" className="block text-gray-700 text-sm font-bold mb-2">Product Name:</label>
@@ -177,27 +224,37 @@ export default  function FacilityManagement() {
                                 </div>
                                 <div className="mb-4">
                                     <label htmlFor="category" className="block text-gray-700 text-sm font-bold mb-2">Category:</label>
-                                    <input
-                                        type="text"
+                                    <select
                                         id="category"
                                         name="category"
                                         value={newItem.category}
                                         onChange={handleChange}
-                                        required
                                         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                    />
+                                    >
+                                        <option value="">Select a category</option>
+                                        {validCategories.map(category => (
+                                            <option key={category} value={category}>
+                                                {category}
+                                            </option>
+                                        ))}
+                                    </select>
                                 </div>
                                 <div className="mb-4">
                                     <label htmlFor="unit" className="block text-gray-700 text-sm font-bold mb-2">Unit:</label>
-                                    <input
-                                        type="text"
+                                    <select
                                         id="unit"
                                         name="unit"
                                         value={newItem.unit}
                                         onChange={handleChange}
-                                        required
                                         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                    />
+                                    >
+                                        <option value="">Select a unit</option>
+                                        {validUnits.map(unit => (
+                                            <option key={unit} value={unit}>
+                                                {unit}
+                                            </option>
+                                        ))}
+                                    </select>
                                 </div>
                                 <div className="mb-4">
                                     <label htmlFor="size" className="block text-gray-700 text-sm font-bold mb-2">Size:</label>
@@ -210,6 +267,7 @@ export default  function FacilityManagement() {
                                         required
                                         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                     />
+                                    {formErrors.size && <p className="text-red-500 text-xs italic">{formErrors.size}</p>}
                                 </div>
                                 <div className="mb-4">
                                     <label htmlFor="par_level" className="block text-gray-700 text-sm font-bold mb-2">Par Level:</label>
@@ -222,6 +280,7 @@ export default  function FacilityManagement() {
                                         required
                                         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                     />
+                                    {formErrors.par_level && <p className="text-red-500 text-xs italic">{formErrors.par_level}</p>}
                                 </div>
                                 <div className="mb-4">
                                     <label htmlFor="qty_in_stock" className="block text-gray-700 text-sm font-bold mb-2">Quantity in Stock:</label>
@@ -234,6 +293,7 @@ export default  function FacilityManagement() {
                                         required
                                         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                     />
+                                    {formErrors.qty_in_stock && <p className="text-red-500 text-xs italic">{formErrors.qty_in_stock}</p>}
                                 </div>
                                 <div className="mb-4">
                                     <label htmlFor="threshold" className="block text-gray-700 text-sm font-bold mb-2">Threshold:</label>
@@ -246,6 +306,7 @@ export default  function FacilityManagement() {
                                         required
                                         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                     />
+                                    {formErrors.threshold && <p className="text-red-500 text-xs italic">{formErrors.threshold}</p>}
                                 </div>
                                 <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex  sm:justify-end space-x-2">
                                     {!isEditMode && (
