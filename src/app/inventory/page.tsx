@@ -46,6 +46,18 @@ export default  function FacilityManagement() {
     // Initialise state for form errors
     const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});   
 
+    // Initialize state for tooltip visibility
+    const [tooltip, setTooltip] = useState<string | null>(null);
+
+ 
+    
+    // Tooltip texts
+    const tooltipText = {
+        sku: "Stock Keeping Unit, a unique identifier for each product.",
+        par_level: "The minimum quantity of the item that should be in stock.",
+        threshold: "The quantity at which a re-order should be triggered."
+    };
+
     const validCategories = ["Cleaning", "PPE", "Stationary", "Medicine", "Incontinence", "Other"];
     const validUnits = ["Each", "Box", "Case"];
     
@@ -74,7 +86,35 @@ export default  function FacilityManagement() {
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         setNewItem({ ...newItem, [e.target.name]: e.target.value });
 
-    }
+    };
+
+     // handle form submission
+     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        // Prevent the default form submission
+        e.preventDefault();
+
+        // Check if the form is valid
+        if (validateForm()) {
+            // Calculate the re_order status
+            const reOrderStatus = calculateReOrderStatus(newItem);
+            
+            if (isEditMode) {
+                // Update the item
+                updateItem({ ...newItem, re_order: reOrderStatus });
+            } else {
+                // Add the item
+                // Calculate the next item_id
+                const nextItemId = items.length > 0 ? Math.max(...items.map(item => item.item_id)) + 1 : 1;
+
+                // Add the item with the new item_id and calculated re_order status
+                addItem({ ...newItem, item_id: nextItemId, re_order: reOrderStatus });
+            }
+
+            // Reset the form
+            resetForm();
+            setShowModal(false);
+        }
+    };
 
     // Validate the form
     const validateForm = () => {
@@ -113,49 +153,21 @@ export default  function FacilityManagement() {
     // Calculate the re_order status
     const calculateReOrderStatus = (item: Item) => {
         return item.qty_in_stock <= item.threshold;
-    }
-
-    // handle form submission
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-        // Prevent the default form submission
-        e.preventDefault();
-
-        // Check if the form is valid
-        if (validateForm()) {
-            // Calculate the re_order status
-            const reOrderStatus = calculateReOrderStatus(newItem);
-            
-            if (isEditMode) {
-                // Update the item
-                updateItem({ ...newItem, re_order: reOrderStatus });
-            } else {
-                // Add the item
-                // Calculate the next item_id
-                const nextItemId = items.length > 0 ? Math.max(...items.map(item => item.item_id)) + 1 : 1;
-
-                // Add the item with the new item_id and calculated re_order status
-                addItem({ ...newItem, item_id: nextItemId, re_order: reOrderStatus });
-            }
-
-            // Reset the form
-            resetForm();
-            setShowModal(false);
-        }
-    }
+    };  
 
     // Add item to the list
     const addItem = (item: Item) => {
         const updatedItems = [...items, item];
         setItems(updatedItems);
         localStorage.setItem('inventoryData', JSON.stringify(updatedItems));
-    }
+    };
 
     // Remove item from the list
     const removeItem = (item_id: number) => {
         const updatedItems = items.filter((item) => item.item_id !== item_id);
         setItems(updatedItems);
         localStorage.setItem('inventoryData', JSON.stringify(updatedItems));
-    }
+    };
 
     // Function to edit an item
     const editItem = (item_id: number) => {
@@ -167,7 +179,7 @@ export default  function FacilityManagement() {
         } else {
             console.error("Item not found");
         }
-    }
+    };
 
     // Function to update an item
     const updateItem = (updatedItem: Item) => {
@@ -176,14 +188,20 @@ export default  function FacilityManagement() {
         );
         setItems(updatedItems);
         localStorage.setItem('inventoryData', JSON.stringify(updatedItems));
-    }
+    };
 
     // Function to reset the form
     const resetForm = () => {
         setIsEditMode(false);
         setNewItem(defaultItem);
         setFormErrors({});
-    }
+    };
+
+    // Function to toggle the tooltip
+    const handleTooltip = (text: string | null) => {
+        setTooltip(text);
+    };
+
 
      // Form for adding new items
      function newItemsForm() {
@@ -229,6 +247,7 @@ export default  function FacilityManagement() {
                                         name="category"
                                         value={newItem.category}
                                         onChange={handleChange}
+                                        required
                                         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                     >
                                         <option value="">Select a category</option>
@@ -246,6 +265,7 @@ export default  function FacilityManagement() {
                                         name="unit"
                                         value={newItem.unit}
                                         onChange={handleChange}
+                                        required
                                         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                     >
                                         <option value="">Select a unit</option>
@@ -349,14 +369,53 @@ export default  function FacilityManagement() {
                 <thead>
                     <tr className="bg-gray-500 text-white">
                         <th className="px-4 py-2 font-bold">Item_ID</th>
-                        <th className="px-4 py-2 font-bold">SKU</th>
+                        <th className="px-4 py-2 font-bold">
+                            SKU <sup
+                                className="underline cursor-pointer"
+                                onMouseEnter={() => handleTooltip("sku")}
+                                onMouseLeave={() => handleTooltip(null)}
+                                >
+                                    ?
+                                </sup>
+                                {tooltip === "sku" && (
+                                <div className="absolute mt-1 bg-gray-200 text-black p-2 rounded shadow-lg w-64">
+                                    {tooltipText.sku}
+                                </div>
+                            )}
+                        </th>
                         <th className="px-4 py-2 font-bold">Prod_Name</th>
                         <th className="px-4 py-2 font-bold">Category</th>
                         <th className="px-4 py-2 font-bold">Unit</th>
                         <th className="px-4 py-2 font-bold">Size</th>
-                        <th className="px-4 py-2 font-bold">Par_Level</th>
+                        <th className="px-4 py-2 font-bold">
+                            Par_Level <sup
+                                className="underline cursor-pointer"
+                                onMouseEnter={() => handleTooltip("par_level")}
+                                onMouseLeave={() => handleTooltip(null)}
+                                >
+                                    ?
+                                </sup>
+                                {tooltip === "par_level" && (
+                                <div className="absolute mt-1 bg-gray-200 text-black p-2 rounded shadow-lg w-64">
+                                    {tooltipText.par_level}
+                                </div>
+                            )}
+                        </th>
                         <th className="px-4 py-2 font-bold">Qty_in_Stock</th>
-                        <th className="px-4 py-2 font-bold">Threshold</th>
+                        <th className="px-4 py-2 font-bold">
+                            Threshold <sup
+                                className="underline cursor-pointer"
+                                onMouseEnter={() => handleTooltip("threshold")}
+                                onMouseLeave={() => handleTooltip(null)}
+                                >
+                                    ?
+                                </sup>
+                                {tooltip === "threshold" && (
+                                <div className="absolute mt-1 bg-gray-200 text-black p-2 rounded shadow-lg w-64">
+                                    {tooltipText.threshold}
+                                </div>
+                            )}
+                        </th>
                         <th className="px-4 py-2 font-bold">Re-order</th>
                         <th className="px-4 py-2 font-bold">Actions</th>
                     </tr>
@@ -373,7 +432,7 @@ export default  function FacilityManagement() {
                             <td className="px-4 py-2">{item.par_level}</td>
                             <td className="px-4 py-2">{item.qty_in_stock}</td>
                             <td className="px-4 py-2">{item.threshold}</td>
-                            <td className="px-4 py-2">{item.re_order ? "Yes" : "No"}</td>
+                            <td className={`px-4 py-2 ${item.re_order ? 'text-red-500 font-bold' : ''}`}>{item.re_order ? "Yes" : "No"}</td>
                             <td className="px-4 py-2 flex justify-center space-x-2 ">
                             <button
                                 className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded"
