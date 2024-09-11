@@ -5,7 +5,8 @@ import React, { useState, useEffect } from "react";
 interface Booking {
   service: string;
   date: string;
-  time: string;
+  startTime: string;
+  endTime: string;
   duration: string;
   staff: string;
 }
@@ -13,10 +14,12 @@ interface Booking {
 export default function ServiceManagement() {
   const [service, setService] = useState<string>("");
   const [date, setDate] = useState<string>("");
-  const [time, setTime] = useState<string>("");
+  const [startTime, setStartTime] = useState<string>("");
+  const [endTime, setEndTime] = useState<string>("");
   const [duration, setDuration] = useState<string>("");
   const [staff, setStaff] = useState<string>("");
   const [bookings, setBookings] = useState<Booking[]>([]);
+  const [errors, setErrors] = useState<string[]>([]);
 
   useEffect(() => {
     const savedBookings = localStorage.getItem("bookingData");
@@ -29,10 +32,29 @@ export default function ServiceManagement() {
 
   const handleBooking = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setErrors([]);
+
+    const today = new Date().toISOString().split("T")[0];
+    if (date < today) {
+      setErrors((prev) => [...prev, "Date cannot be in the past."]);
+      return;
+    }
+
+    if (parseFloat(duration) <= 0) {
+      setErrors((prev) => [...prev, "Duration must be a positive number."]);
+      return;
+    }
+
+    if (new Date(startTime) >= new Date(endTime)) {
+      setErrors((prev) => [...prev, "End time must be after start time."]);
+      return;
+    }
+
     const bookingData: Booking = {
       service,
-      date,
-      time,
+      date: formatDate(date),
+      startTime,
+      endTime,
       duration,
       staff,
     };
@@ -48,31 +70,60 @@ export default function ServiceManagement() {
     }
   };
 
-  const calculatePerformanceMetrics = () => {
-    const serviceCount = bookings.reduce((acc, booking) => {
-      acc[booking.service] = (acc[booking.service] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
-
-    const averageDuration = bookings.reduce((acc, booking) => {
-      acc[booking.service] =
-        (acc[booking.service] || 0) + parseInt(booking.duration);
-      return acc;
-    }, {} as Record<string, number>);
-
-    for (let service in averageDuration) {
-      averageDuration[service] =
-        averageDuration[service] / serviceCount[service];
-    }
-
-    return { serviceCount, averageDuration };
+  const formatDate = (date: string) => {
+    const [year, month, day] = date.split("-");
+    return `${day}-${month}-${year}`;
   };
 
-  const { serviceCount, averageDuration } = calculatePerformanceMetrics();
+  const calculateDuration = () => {
+    if (startTime && endTime) {
+      const start = new Date(`1970-01-01T${convertTo24Hour(startTime)}:00`);
+      const end = new Date(`1970-01-01T${convertTo24Hour(endTime)}:00`);
+      const diff = (end.getTime() - start.getTime()) / (1000 * 60 * 60); // in hours
+      setDuration(diff.toString());
+    }
+  };
+
+  useEffect(() => {
+    calculateDuration();
+  }, [startTime, endTime]);
+
+  const handleDelete = (index: number) => {
+    const updatedBookings = bookings.filter((_, i) => i !== index);
+    localStorage.setItem("bookingData", JSON.stringify(updatedBookings));
+    setBookings(updatedBookings);
+  };
+
+  const generateTimeOptions = () => {
+    const times = [];
+    for (let i = 0; i < 24; i++) {
+      for (let j = 0; j < 60; j += 30) {
+        const hours = i % 12 === 0 ? 12 : i % 12;
+        const minutes = j.toString().padStart(2, "0");
+        const period = i < 12 ? "AM" : "PM";
+        times.push(`${hours}:${minutes} ${period}`);
+      }
+    }
+    return times;
+  };
+
+  const convertTo24Hour = (time: string) => {
+    const [hourMinute, period] = time.split(" ");
+    let [hour, minute] = hourMinute.split(":").map(Number);
+    if (period === "PM" && hour !== 12) {
+      hour += 12;
+    } else if (period === "AM" && hour === 12) {
+      hour = 0;
+    }
+    return `${hour.toString().padStart(2, "0")}:${minute
+      .toString()
+      .padStart(2, "0")}`;
+  };
+
+  const timeOptions = generateTimeOptions();
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-around p-24">
-      <h1 className="text-4xl mb-6">Service Management</h1>
       <h1 className="text-4xl mb-6">Service Management</h1>
 
       {/* Service Catalogue */}
@@ -98,6 +149,16 @@ export default function ServiceManagement() {
       <section className="w-full max-w-4xl mb-8 p-4 border border-gray-300 rounded-lg">
         <h2 className="text-2xl mb-4">Book a Service</h2>
         <form onSubmit={handleBooking}>
+          {errors.length > 0 && (
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+              <strong className="font-bold">Error:</strong>
+              <ul className="list-disc pl-5">
+                {errors.map((error, index) => (
+                  <li key={index}>{error}</li>
+                ))}
+              </ul>
+            </div>
+          )}
           <div className="mb-4">
             <label
               className="block text-gray-700 text-sm font-bold mb-2"
@@ -152,24 +213,51 @@ export default function ServiceManagement() {
               id="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
+              min={new Date().toISOString().split("T")[0]}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             />
           </div>
           <div className="mb-4">
             <label
               className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="time"
+              htmlFor="startTime"
             >
-              Time
+              Start Time
             </label>
-            <input
-              type="time"
-              id="time"
-              value={time}
-              step="1800" // 30 minutes in seconds
-              onChange={(e) => setTime(e.target.value)}
+            <select
+              id="startTime"
+              value={startTime}
+              onChange={(e) => setStartTime(e.target.value)}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            />
+            >
+              <option value="">Select a start time</option>
+              {timeOptions.map((time, index) => (
+                <option key={index} value={time}>
+                  {time}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="mb-4">
+            <label
+              className="block text-gray-700 text-sm font-bold mb-2"
+              htmlFor="endTime"
+            >
+              End Time
+            </label>
+            <select
+              id="endTime"
+              value={endTime}
+              onChange={(e) => setEndTime(e.target.value)}
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            >
+              <option value="">Select an end time</option>
+              {timeOptions.map((time, index) => (
+                <option key={index} value={time}>
+                  {time}
+                </option>
+              ))}
+            </select>
           </div>
           <div className="mb-4">
             <label
@@ -179,10 +267,10 @@ export default function ServiceManagement() {
               Duration (hours)
             </label>
             <input
-              type="number"
+              type="text"
               id="duration"
               value={duration}
-              onChange={(e) => setDuration(e.target.value)}
+              readOnly
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             />
           </div>
@@ -198,47 +286,39 @@ export default function ServiceManagement() {
       {/* Current Bookings */}
       <section className="w-full max-w-4xl mb-8 p-4 border border-gray-300 rounded-lg">
         <h2 className="text-2xl mb-4">Current Bookings</h2>
-        <ul>
-          {bookings.map((booking, index) => (
-            <li key={index} className="mb-2">
-              <p>
-                <b>Service:</b> {booking.service}
-              </p>
-              <p>
-                <b>Date:</b> {booking.date}
-              </p>
-              <p>
-                <b>Time:</b> {booking.time}
-              </p>
-              <p>
-                <b>Duration:</b> {booking.duration} hours
-              </p>
-              <p>
-                <b>Staff:</b> {booking.staff}
-              </p>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      {/* Service Performance Tracking */}
-      <section className="w-full max-w-4xl mb-8 p-4 border border-gray-300 rounded-lg">
-        <h2 className="text-2xl mb-4">Service Performance Tracking</h2>
-        <ul>
-          {Object.keys(serviceCount).map((service) => (
-            <li key={service}>
-              <p>
-                <b>Service:</b> {service}
-              </p>
-              <p>
-                <b>Bookings:</b> {serviceCount[service]}
-              </p>
-              <p>
-                <b>Average Duration:</b> {averageDuration[service]} hours
-              </p>
-            </li>
-          ))}
-        </ul>
+        <table className="w-full border-collapse">
+          <thead>
+            <tr>
+              <th className="border-b py-2 px-4">Service</th>
+              <th className="border-b py-2 px-4">Date</th>
+              <th className="border-b py-2 px-4">Start Time</th>
+              <th className="border-b py-2 px-4">End Time</th>
+              <th className="border-b py-2 px-4">Duration</th>
+              <th className="border-b py-2 px-4">Staff</th>
+              <th className="border-b py-2 px-4">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {bookings.map((booking, index) => (
+              <tr key={index}>
+                <td className="border-b py-2 px-4">{booking.service}</td>
+                <td className="border-b py-2 px-4">{booking.date}</td>
+                <td className="border-b py-2 px-4">{booking.startTime}</td>
+                <td className="border-b py-2 px-4">{booking.endTime}</td>
+                <td className="border-b py-2 px-4">{booking.duration}</td>
+                <td className="border-b py-2 px-4">{booking.staff}</td>
+                <td className="border-b py-2 px-4">
+                  <button
+                    onClick={() => handleDelete(index)}
+                    className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </section>
     </main>
   );
