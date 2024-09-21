@@ -153,7 +153,7 @@ export default function FacilityManagement() {
             <div key={index} className="p-4">
               <div className="bg-white shadow-lg rounded-lg p-6">
                 <h2 className="text-2xl font-bold mb-4">
-                  {member.personalDetails.name}
+                  {member?.personalDetails.name}
                 </h2>
 
                 <DynamicTable
