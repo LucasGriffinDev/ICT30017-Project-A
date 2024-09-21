@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 
 interface Booking {
   service: string;
@@ -12,41 +12,41 @@ interface Booking {
 }
 
 export default function ServiceManagement() {
-  const [service, setService] = useState<string>("");
-  const [date, setDate] = useState<string>("");
-  const [startTime, setStartTime] = useState<string>("");
-  const [endTime, setEndTime] = useState<string>("");
-  const [duration, setDuration] = useState<string>("");
-  const [staff, setStaff] = useState<string>("");
+  const [service, setService] = useState<string>('');
+  const [date, setDate] = useState<string>('');
+  const [startTime, setStartTime] = useState<string>('');
+  const [endTime, setEndTime] = useState<string>('');
+  const [duration, setDuration] = useState<string>('');
+  const [staff, setStaff] = useState<string>('');
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [errors, setErrors] = useState<string[]>([]);
 
   useEffect(() => {
-    const savedBookings = localStorage.getItem("bookingData");
+    const savedBookings = localStorage.getItem('bookingData');
     if (savedBookings) {
       setBookings(JSON.parse(savedBookings));
     }
   }, []);
 
-  const staffOptions = ["John Doe", "Jane Smith", "Mike Johnson"];
+  const staffOptions = ['John Doe', 'Jane Smith', 'Mike Johnson'];
 
   const handleBooking = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setErrors([]);
 
-    const today = new Date().toISOString().split("T")[0];
+    const today = new Date().toISOString().split('T')[0];
     if (date < today) {
-      setErrors((prev) => [...prev, "Date cannot be in the past."]);
+      setErrors((prev) => [...prev, 'Date cannot be in the past.']);
       return;
     }
 
     if (parseFloat(duration) <= 0) {
-      setErrors((prev) => [...prev, "Duration must be a positive number."]);
+      setErrors((prev) => [...prev, 'Duration must be a positive number.']);
       return;
     }
 
     if (new Date(startTime) >= new Date(endTime)) {
-      setErrors((prev) => [...prev, "End time must be after start time."]);
+      setErrors((prev) => [...prev, 'End time must be after start time.']);
       return;
     }
 
@@ -61,17 +61,17 @@ export default function ServiceManagement() {
 
     try {
       const updatedBookings = [...bookings, bookingData];
-      localStorage.setItem("bookingData", JSON.stringify(updatedBookings));
+      localStorage.setItem('bookingData', JSON.stringify(updatedBookings));
       setBookings(updatedBookings);
-      alert("Booking saved to local storage");
+      alert('Booking saved to local storage');
     } catch (error) {
-      console.error("Error:", error);
-      alert("Error saving booking");
+      console.error('Error:', error);
+      alert('Error saving booking');
     }
   };
 
   const formatDate = (date: string) => {
-    const [year, month, day] = date.split("-");
+    const [year, month, day] = date.split('-');
     return `${day}-${month}-${year}`;
   };
 
@@ -90,7 +90,7 @@ export default function ServiceManagement() {
 
   const handleDelete = (index: number) => {
     const updatedBookings = bookings.filter((_, i) => i !== index);
-    localStorage.setItem("bookingData", JSON.stringify(updatedBookings));
+    localStorage.setItem('bookingData', JSON.stringify(updatedBookings));
     setBookings(updatedBookings);
   };
 
@@ -99,8 +99,8 @@ export default function ServiceManagement() {
     for (let i = 0; i < 24; i++) {
       for (let j = 0; j < 60; j += 30) {
         const hours = i % 12 === 0 ? 12 : i % 12;
-        const minutes = j.toString().padStart(2, "0");
-        const period = i < 12 ? "AM" : "PM";
+        const minutes = j.toString().padStart(2, '0');
+        const period = i < 12 ? 'AM' : 'PM';
         times.push(`${hours}:${minutes} ${period}`);
       }
     }
@@ -108,16 +108,16 @@ export default function ServiceManagement() {
   };
 
   const convertTo24Hour = (time: string) => {
-    const [hourMinute, period] = time.split(" ");
-    let [hour, minute] = hourMinute.split(":").map(Number);
-    if (period === "PM" && hour !== 12) {
+    const [hourMinute, period] = time.split(' ');
+    let [hour, minute] = hourMinute.split(':').map(Number);
+    if (period === 'PM' && hour !== 12) {
       hour += 12;
-    } else if (period === "AM" && hour === 12) {
+    } else if (period === 'AM' && hour === 12) {
       hour = 0;
     }
-    return `${hour.toString().padStart(2, "0")}:${minute
+    return `${hour.toString().padStart(2, '0')}:${minute
       .toString()
-      .padStart(2, "0")}`;
+      .padStart(2, '0')}`;
   };
 
   const timeOptions = generateTimeOptions();
@@ -129,20 +129,50 @@ export default function ServiceManagement() {
       {/* Service Catalogue */}
       <section className="w-full max-w-4xl mb-8 p-4 border border-gray-300 rounded-lg">
         <h2 className="text-2xl mb-4">Service Catalogue</h2>
-        <p>Details about the various services offered.</p>
-        <br />
-        <p>
-          <b>Registered Nurse:</b> <br /> Provide comprehensive nursing care,
-          manage medications, monitor health conditions, and develop care plans.
-        </p>
-        <p>
-          <b>Personal Care Assistants:</b> <br /> Assist with daily living
-          activities such as bathing, dressing, grooming, and mobility.
-        </p>
-        <p>
-          <b>Activity Coordinators:</b> <br /> Organize and facilitate social,
-          recreational, and therapeutic activities for residents.
-        </p>
+
+        <div className="grid grid-cols-3 gap-4">
+          {/* Registered Nurse */}
+          <div className="flex flex-col items-center">
+            <img
+              src="/images/serviceImg1.jpg"
+              alt="Registered Nurse"
+              className="w-full h-auto rounded-lg"
+            />
+            <p className="mt-2 text-center">
+              <b>Registered Nurse:</b> <br />
+              Provide comprehensive nursing care, manage medications, monitor
+              health conditions, and develop care plans.
+            </p>
+          </div>
+
+          {/* Personal Care Assistant */}
+          <div className="flex flex-col items-center">
+            <img
+              src="/images/serviceImg2.jpg"
+              alt="Personal Care Assistant"
+              className="w-full h-auto rounded-lg"
+            />
+            <p className="mt-2 text-center">
+              <b>Personal Care Assistants:</b> <br />
+              Assist with daily living activities such as bathing, dressing,
+              grooming, and mobility.
+            </p>
+          </div>
+
+          {/* Activity Coordinator */}
+          <div className="flex flex-col items-center">
+            <img
+              src="/images/serviceImg3.jpg"
+              alt="Activity Coordinator"
+              className="w-full h-auto rounded-lg"
+            />
+            <p className="mt-2 text-center">
+              <b>Activity Coordinators:</b> <br />
+              Organize and facilitate social, recreational, and therapeutic
+              activities for residents.
+            </p>
+          </div>
+        </div>
       </section>
 
       {/* Booking Form */}
@@ -213,7 +243,7 @@ export default function ServiceManagement() {
               id="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              min={new Date().toISOString().split("T")[0]}
+              min={new Date().toISOString().split('T')[0]}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             />
           </div>
