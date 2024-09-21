@@ -1,243 +1,220 @@
-"use client";
+'use client';
 
 import React, { useState, useEffect } from 'react';
+import Slider from 'react-slick';
+import DynamicTable from '../components/Table'; // Adjust the path based on your folder structure
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
 
 export default function FacilityManagement() {
-    // Initialize state for data
-    const [data, setData] = useState({
-        personalDetails: {},
-        carePlans: [],
-        medications: [],
-        familyContacts: [],
-        accessibilityRequirements: [],
-    });
+  const [members, setMembers] = useState<any[]>([]); // Ensure members is initialised as an empty array
 
-    // Fetch data from localStorage on component mount
-    useEffect(() => {
-        const storedData = localStorage.getItem('facilityData');
-        if (storedData) {
-            setData(JSON.parse(storedData));
-        } else {
-            // Dummy data if nothing is stored yet
-            const dummyData = {
-                personalDetails: {
-                    name: "John Doe",
-                    age: 85,
-                    gender: "Male",
-                },
-                carePlans: [
-                    {
-                        date: "2024-08-01",
-                        plan: "Daily physiotherapy and a balanced diet",
-                    },
-                    {
-                        date: "2024-08-02",
-                        plan: "Weekly mental health check-up and light exercises",
-                    },
-                ],
-                medications: [
-                    {
-                        name: "Aspirin",
-                        dosage: "100mg daily",
-                    },
-                    {
-                        name: "Metformin",
-                        dosage: "500mg twice daily",
-                    },
-                ],
-                familyContacts: [
-                    {
-                        relation: "Son",
-                        name: "Michael Doe",
-                        contact: "+61 400 000 000",
-                    },
-                    {
-                        relation: "Daughter",
-                        name: "Emily Doe",
-                        contact: "+61 400 000 001",
-                    },
-                ],
-                accessibilityRequirements: [
-                    "Wheelchair access required",
-                    "Room on ground floor",
-                ],
-            };
-
-            // Save dummy data to localStorage and state
-            localStorage.setItem('facilityData', JSON.stringify(dummyData));
-            setData(dummyData);
-        }
-    }, []);
-
-    // Save data to localStorage and update state
-    const saveData = (newData) => {
-        localStorage.setItem('facilityData', JSON.stringify(newData));
-        setData(newData);
-    };
-
-    // Function to add a new member
-    const addNewMember = () => {
-        const newMember = {
-            personalDetails: {
-                name: "Jane Smith",
-                age: 90,
-                gender: "Female",
+  useEffect(() => {
+    const storedData = localStorage.getItem('facilityData');
+    if (storedData) {
+      try {
+        const parsedData = JSON.parse(storedData);
+        setMembers(Array.isArray(parsedData) ? parsedData : []); // Ensure parsedData is an array
+      } catch (error) {
+        console.error('Error parsing stored data:', error);
+        setMembers([]); // Fallback to an empty array if parsing fails
+      }
+    } else {
+      const dummyData = [
+        {
+          personalDetails: {
+            name: 'John Doe',
+            age: 85,
+            gender: 'Male',
+          },
+          carePlans: [
+            {
+              date: '2024-08-01',
+              plan: 'Daily physiotherapy and a balanced diet',
             },
-            carePlans: [
-                {
-                    date: "2024-08-03",
-                    plan: "Daily walking and a low-sodium diet",
-                },
-            ],
-            medications: [
-                {
-                    name: "Lisinopril",
-                    dosage: "10mg daily",
-                },
-            ],
-            familyContacts: [
-                {
-                    relation: "Son",
-                    name: "David Smith",
-                    contact: "+61 400 000 002",
-                },
-            ],
-            accessibilityRequirements: [
-                "Hearing aid support",
-                "Accessible bathroom",
-            ],
-        };
+            {
+              date: '2024-08-02',
+              plan: 'Weekly mental health check-up and light exercises',
+            },
+          ],
+          medications: [
+            {
+              name: 'Aspirin',
+              dosage: '100mg daily',
+            },
+            {
+              name: 'Metformin',
+              dosage: '500mg twice daily',
+            },
+          ],
+          familyContacts: [
+            {
+              relation: 'Son',
+              name: 'Michael Doe',
+              contact: '+61 400 000 000',
+            },
+            {
+              relation: 'Daughter',
+              name: 'Emily Doe',
+              contact: '+61 400 000 001',
+            },
+          ],
+          accessibilityRequirements: [
+            { requirement: 'Wheelchair access required' },
+            { requirement: 'Room on ground floor' },
+          ],
+        },
+      ];
 
-        // Updating the current state with new member details
-        const updatedData = {
-            ...data,
-            personalDetails: newMember.personalDetails,
-            carePlans: [...data.carePlans, ...newMember.carePlans],
-            medications: [...data.medications, ...newMember.medications],
-            familyContacts: [...data.familyContacts, ...newMember.familyContacts],
-            accessibilityRequirements: [...data.accessibilityRequirements, ...newMember.accessibilityRequirements],
-        };
+      localStorage.setItem('facilityData', JSON.stringify(dummyData));
+      setMembers(dummyData);
+    }
+  }, []);
 
-        // Save the updated data to localStorage
-        saveData(updatedData);
+  const saveData = (newData: any[]) => {
+    localStorage.setItem('facilityData', JSON.stringify(newData));
+    setMembers(newData);
+  };
+
+  const addNewMember = () => {
+    const newMember = {
+      personalDetails: {
+        name: 'Jane Smith',
+        age: 90,
+        gender: 'Female',
+      },
+      carePlans: [
+        {
+          date: '2024-08-03',
+          plan: 'Daily walking and a low-sodium diet',
+        },
+      ],
+      medications: [
+        {
+          name: 'Lisinopril',
+          dosage: '10mg daily',
+        },
+      ],
+      familyContacts: [
+        {
+          relation: 'Son',
+          name: 'David Smith',
+          contact: '+61 400 000 002',
+        },
+      ],
+      accessibilityRequirements: [
+        { requirement: 'Hearing aid support' },
+        { requirement: 'Accessible bathroom' },
+      ],
     };
 
-    // Function to clear local storage and reset data
-    const clearData = () => {
-        localStorage.removeItem('facilityData');
-        setData({
-            personalDetails: {},
-            carePlans: [],
-            medications: [],
-            familyContacts: [],
-            accessibilityRequirements: [],
-        });
-    };
+    const updatedData = [...members, newMember];
 
-    return (
-        <main className="flex min-h-screen flex-col items-center justify-start p-4">
-            <h1 className="text-4xl mb-4 mt-4">Member Management Page</h1>
+    saveData(updatedData);
+  };
 
-            <div className="flex space-x-4 mb-4">
-                <button
-                    className="bg-blue-500 text-white px-4 py-2 rounded"
-                    onClick={addNewMember}
-                >
-                    Add New Member
-                </button>
+  const clearData = () => {
+    localStorage.removeItem('facilityData');
+    setMembers([]);
+  };
 
-                <button
-                    className="bg-red-500 text-white px-4 py-2 rounded"
-                    onClick={clearData}
-                >
-                    Clear Data
-                </button>
+  const settings = {
+    dots: true,
+    infinite: false,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    arrows: true,
+  };
+
+  return (
+    <main className="flex-grow flex flex-col items-center justify-center p-4">
+      <h1 className="text-4xl mb-4 mt-4">Member Management Page</h1>
+
+      <div className="flex space-x-4 mb-4">
+        <button
+          className="bg-blue-500 text-white px-4 py-2 rounded"
+          onClick={addNewMember}
+        >
+          Add New Member
+        </button>
+
+        <button
+          className="bg-red-500 text-white px-4 py-2 rounded"
+          onClick={clearData}
+        >
+          Clear Data
+        </button>
+      </div>
+
+      <div className="w-full max-w-4xl">
+        <Slider {...settings}>
+          {members.map((member, index) => (
+            <div key={index} className="p-4">
+              <div className="bg-white shadow-lg rounded-lg p-6">
+                <h2 className="text-2xl font-bold mb-4">
+                  {member.personalDetails.name}
+                </h2>
+
+                <DynamicTable
+                  data={[
+                    { Attribute: 'Name', Value: member.personalDetails.name },
+                    { Attribute: 'Age', Value: member.personalDetails.age },
+                    {
+                      Attribute: 'Gender',
+                      Value: member.personalDetails.gender,
+                    },
+                  ]}
+                />
+
+                <div className="mt-4">
+                  <h3 className="text-xl font-semibold">Care Plans:</h3>
+                  <DynamicTable
+                    data={member.carePlans.map((plan) => ({
+                      Date: plan.date,
+                      Plan: plan.plan,
+                    }))}
+                  />
+                </div>
+
+                <div className="mt-4">
+                  <h3 className="text-xl font-semibold">Medications:</h3>
+                  <DynamicTable
+                    data={member.medications.map((medication) => ({
+                      Name: medication.name,
+                      Dosage: medication.dosage,
+                    }))}
+                  />
+                </div>
+
+                <div className="mt-4">
+                  <h3 className="text-xl font-semibold">Family Contacts:</h3>
+                  <DynamicTable
+                    data={member.familyContacts.map((contact) => ({
+                      Relation: contact.relation,
+                      Name: contact.name,
+                      Contact: contact.contact,
+                    }))}
+                  />
+                </div>
+
+                <div className="mt-4">
+                  <h3 className="text-xl font-semibold">
+                    Accessibility Requirements:
+                  </h3>
+                  <DynamicTable
+                    data={member.accessibilityRequirements.map(
+                      (requirement) => ({
+                        Requirement: requirement.requirement,
+                      })
+                    )}
+                  />
+                </div>
+              </div>
             </div>
-
-            <table className="table-auto w-full text-left">
-                <thead>
-                <tr>
-                    <th className="px-4 py-2 text-2xl font-bold">Category</th>
-                    <th className="px-4 py-2 text-2xl font-bold">Details</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr className="bg-gray-100">
-                    <td className="border px-4 py-2 font-bold">Personal Details</td>
-                    <td className="border px-4 py-2">
-                        <p>Name: {data.personalDetails.name || "N/A"}</p>
-                        <p>Age: {data.personalDetails.age || "N/A"}</p>
-                        <p>Gender: {data.personalDetails.gender || "N/A"}</p>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td className="border px-4 py-2 font-bold">Care Plans</td>
-                    <td className="border px-4 py-2">
-                        <ul>
-                            {data.carePlans.length > 0 ? (
-                                data.carePlans.map((plan, index) => (
-                                    <li key={index}>
-                                        <strong>Date:</strong> {plan.date} - <strong>Plan:</strong> {plan.plan}
-                                    </li>
-                                ))
-                            ) : (
-                                <li>No care plans available</li>
-                            )}
-                        </ul>
-                    </td>
-                </tr>
-
-                <tr className="bg-gray-100">
-                    <td className="border px-4 py-2 font-bold">Medication Tracking</td>
-                    <td className="border px-4 py-2">
-                        <ul>
-                            {data.medications.length > 0 ? (
-                                data.medications.map((medication, index) => (
-                                    <li key={index}>
-                                        <strong>Name:</strong> {medication.name} - <strong>Dosage:</strong> {medication.dosage}
-                                    </li>
-                                ))
-                            ) : (
-                                <li>No medications available</li>
-                            )}
-                        </ul>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td className="border px-4 py-2 font-bold">Family Contacts</td>
-                    <td className="border px-4 py-2">
-                        <ul>
-                            {data.familyContacts.length > 0 ? (
-                                data.familyContacts.map((contact, index) => (
-                                    <li key={index}>
-                                        <strong>Relation:</strong> {contact.relation} - <strong>Name:</strong> {contact.name} - <strong>Contact:</strong> {contact.contact}
-                                    </li>
-                                ))
-                            ) : (
-                                <li>No family contacts available</li>
-                            )}
-                        </ul>
-                    </td>
-                </tr>
-
-                <tr className="bg-gray-100">
-                    <td className="border px-4 py-2 font-bold">Accessibility Requirements</td>
-                    <td className="border px-4 py-2">
-                        <ul>
-                            {data.accessibilityRequirements.length > 0 ? (
-                                data.accessibilityRequirements.map((requirement, index) => (
-                                    <li key={index}>{requirement}</li>
-                                ))
-                            ) : (
-                                <li>No accessibility requirements available</li>
-                            )}
-                        </ul>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </main>
-    );
+          ))}
+        </Slider>
+      </div>
+    </main>
+  );
 }
