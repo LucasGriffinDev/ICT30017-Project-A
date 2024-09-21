@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Slider from 'react-slick';
 import DynamicTable from '../components/Table'; // Adjust the path based on your folder structure
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
+import Slider from 'react-slick';
 
 export default function FacilityManagement() {
   const [members, setMembers] = useState<any[]>([]); // Ensure members is initialised as an empty array
