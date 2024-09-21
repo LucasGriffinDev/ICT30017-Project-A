@@ -1,1 +1,0 @@
-[{"id":"123","name":"jun","role":"fired","qualifications":"non","employmentType":"parttime","remuneration":"none","training":"none"},{"id":"test","name":"test","role":"a","qualifications":"a","employmentType":"a","remuneration":"a","training":"a"}]
