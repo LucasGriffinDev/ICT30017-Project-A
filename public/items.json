@@ -1,0 +1,43 @@
+[
+    {
+      "ID": "1",
+      "SKU": "FK0001",
+      "Description": "Face Mask",
+      "Category": "PPE",
+      "Unit": "Box",
+      "Size": "100",
+      "Par_level": 5,
+      "Stock_on_hand": 2,
+      "Threshold": 1,
+      "Re_order": false
+    },
+
+    {
+        "ID": "2",
+        "SKU": "TP0001",
+        "Description": "Toilet Paper",
+        "Category": "Cleaning",
+        "Unit": "Box",
+        "Size": "50",
+        "Par_level": 5,
+        "Stock_on_hand": 3,
+        "Threshold": 1,
+        "Re_order": false
+      },
+
+      {
+        "ID": "3",
+        "SKU": "IB0001",
+        "Description": "Incontinence Bags",
+        "Category": "Incontinence",
+        "Unit": "Box",
+        "Size": "200",
+        "Par_level": 10,
+        "Stock_on_hand": 2,
+        "Threshold": 1,
+        "Re_order": false
+      }
+
+  ]
+
+  
