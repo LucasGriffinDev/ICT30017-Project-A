@@ -170,7 +170,7 @@ export default function FacilityManagement() {
                 <div className="mt-4">
                   <h3 className="text-xl font-semibold">Care Plans:</h3>
                   <DynamicTable
-                    data={member.carePlans.map((plan) => ({
+                    data={member.carePlans.map((plan: any) => ({
                       Date: plan.date,
                       Plan: plan.plan,
                     }))}
@@ -180,7 +180,7 @@ export default function FacilityManagement() {
                 <div className="mt-4">
                   <h3 className="text-xl font-semibold">Medications:</h3>
                   <DynamicTable
-                    data={member.medications.map((medication) => ({
+                    data={member.medications.map((medication: any) => ({
                       Name: medication.name,
                       Dosage: medication.dosage,
                     }))}
@@ -190,7 +190,7 @@ export default function FacilityManagement() {
                 <div className="mt-4">
                   <h3 className="text-xl font-semibold">Family Contacts:</h3>
                   <DynamicTable
-                    data={member.familyContacts.map((contact) => ({
+                    data={member.familyContacts.map((contact: any) => ({
                       Relation: contact.relation,
                       Name: contact.name,
                       Contact: contact.contact,
@@ -204,7 +204,7 @@ export default function FacilityManagement() {
                   </h3>
                   <DynamicTable
                     data={member.accessibilityRequirements.map(
-                      (requirement) => ({
+                      (requirement: any) => ({
                         Requirement: requirement.requirement,
                       })
                     )}
