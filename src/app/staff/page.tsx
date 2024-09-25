@@ -51,7 +51,7 @@ export default function RoomManagement() {
       <table className="table-auto">
         <thead>
           <tr>
-            <th className="px-4 py-2">Room</th>
+            <th className="px-4 py-2">Facility</th>
             <th className="px-4 py-2">Reservation</th>
             <th className="px-4 py-2">Member</th>
           </tr>
