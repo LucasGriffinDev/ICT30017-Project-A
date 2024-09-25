@@ -44,6 +44,14 @@ export default function RoomManagement() {
     }).then((response) => response.json())
       .then((data) => setRoomList([...roomList, data]));
   };
+
+const deleteReserve = (id: string) => {
+    fetch(`/api/facility/${facility}`, {
+      method: 'DELETE',
+    }).then(() => {
+      setRoomList(roomList.filter((room) => room.id !== id));
+    });
+  };
   
   const addReserve = () => {
     const newRoom: RoomMember = {
@@ -106,7 +114,7 @@ export default function RoomManagement() {
               <td className="px-4 py-2">{room.Reservation}</td>
               <td className="px-4 py-2">{room.Member}</td>
               <td className="px-4 py-2">
-                <button onClick={() => deleteRoom(room.facility)} className="bg-red-500 text-white p-2 rounded">Delete</button>
+                <button onClick={() => deleteReserve(room.facility)} className="bg-red-500 text-white p-2 rounded">Delete</button>
               </td>
             </tr>
       ))}
