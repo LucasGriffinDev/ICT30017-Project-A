@@ -89,8 +89,8 @@ export default function RoomManagement() {
         </tbody>
       </table>
 
-      <h2 className="text-3xl">Reservation Management</h2>
-       <button onClick={addReserve} className="mt-4 p-2 bg-blue-500 text-white rounded">Add Reservation</button>
+       <h2 className="text-3xl">Room Management</h2>
+       <button onClick={addRoom} className="mt-4 p-2 bg-blue-500 text-white rounded">Add Room</button>
       <table className="table-auto">
         <thead>
           <tr>
@@ -112,6 +112,8 @@ export default function RoomManagement() {
       ))}
         </tbody>
       </table>
+
+      
     </main>
   );
 }
