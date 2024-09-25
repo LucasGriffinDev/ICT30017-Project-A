@@ -65,7 +65,7 @@ const [reserveList, setReserveList] = useState<ReserveMember[]>([]);
 
   const addReserve = () => {
     const newReserve: ReserveMember = {
-      facility: prompt('Enter Room ID:') || '', // Prompt returns null if canceled, so default to an empty string
+      facility: prompt('Enter Facility:') || '', // Prompt returns null if canceled, so default to an empty string
       Reservation: prompt('Enter Reservation:') || '',
       Member: prompt('Enter Member:') || '',
     };
