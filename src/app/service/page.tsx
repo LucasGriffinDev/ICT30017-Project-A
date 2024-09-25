@@ -40,9 +40,11 @@ export default function ReservationManagement() {
       .then((data) => setReservationList([...reservationList, data]));
   };
 
-
-
-       <h2 className="text-3xl">Facility Reservations</h2>
+  return (
+    <main className="flex min-h-screen flex-col items-center justify-around p-24">
+      <h1 className="text-4xl">Facility Management</h1>
+      
+    <h2 className="text-3xl">Facility Reservations</h2>
       <button onClick={addReservation} className="mt-4 p-2 bg-blue-500 text-white rounded">Add Reservation</button>
       <table className="table-auto">
         <thead>
