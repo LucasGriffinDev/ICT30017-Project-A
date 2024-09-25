@@ -7,11 +7,6 @@ type RoomMember = {
   Availability: string;
   Occupant: string;
 };
-type ReservationMember = {
-  Facility: string;
-  Reservation: string;
-  Member: string;
-};
 
 export default function RoomManagement() {
   const [roomList, setRoomList] = useState<RoomMember[]>([]);
