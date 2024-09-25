@@ -8,26 +8,13 @@ type RoomMember = {
   Occupant: string;
 };
 
-type ReservationMember = {
-  Facility: string;
-  Reservation: string;
-  Member: string;
-};
-
 export default function RoomManagement() {
   const [roomList, setRoomList] = useState<RoomMember[]>([]);
-  const [reservationList, setReservationList] = useState<ReservationMember[]>([]);
 
   useEffect(() => {
-  fetch('/api/facility')
+    fetch('/api/facility')
       .then((response) => response.json())
-      .then((data) => setRoomList(data));     
- }, []);
-
- useEffect(() => {
-    fetch('/api/Reservation')
-      .then((response) => response.json())
-      .then((data) => setReservationList(data));
+      .then((data) => setRoomList(data));
   }, []);
 
   const deleteRoom = (id: string) => {
@@ -44,7 +31,7 @@ export default function RoomManagement() {
       Availability: prompt('Enter Availability:') || '',
       Occupant: prompt('Enter Occupant:') || '',
     };
-     
+    
     fetch('/api/facility', {
       method: 'POST',
       headers: {
@@ -53,33 +40,6 @@ export default function RoomManagement() {
       body: JSON.stringify(newRoom),
     }).then((response) => response.json())
       .then((data) => setRoomList([...roomList, data]));
-    };
-
-
-
-  const deleteReservation = (Facility: string) => {
-    fetch(`/api/reservation/${Facility}`, {
-      method: 'DELETE',
-    }).then(() => {
-      setReservationList(reservationList.filter((reservation) => reservation.Facility !== Facility));
-    });
-  };
-
-  const addReservation = () => {
-    const newReservation: ReservationMember = {
-      Facility: prompt('Enter Facility:') || '', // Prompt returns null if canceled, so default to an empty string
-      Reservation: prompt('Enter Reservation:') || '',
-      Member: prompt('Enter Member:') || '',
-    };
-    
-    fetch('/api/reservation', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(newReservation),
-    }).then((response) => response.json())
-      .then((data) => setReservationList([...reservationList, data]));
   };
 
   return (
@@ -104,30 +64,6 @@ export default function RoomManagement() {
               <td className="px-4 py-2">{room.Occupant}</td>
               <td className="px-4 py-2">
                 <button onClick={() => deleteRoom(room.id)} className="bg-red-500 text-white p-2 rounded">Delete</button>
-              </td>
-            </tr>
-      ))}
-        </tbody>
-      </table>
-
-       <h2 className="text-3xl">Facility Reservations</h2>
-      <button onClick={addReservation} className="mt-4 p-2 bg-blue-500 text-white rounded">Add Reservation</button>
-      <table className="table-auto">
-        <thead>
-          <tr>
-            <th className="px-4 py-2">Facility</th>
-            <th className="px-4 py-2">Reservation</th>
-            <th className="px-4 py-2">Member</th>
-          </tr>
-        </thead>
-        <tbody>
-           {reservationList.map((reservation) => (
-            <tr key={reservation.Facility} className="border-t">
-              <td className="px-4 py-2">{reservation.Facility}</td>
-              <td className="px-4 py-2">{reservation.Reservation}</td>
-              <td className="px-4 py-2">{reservation.Member}</td>
-              <td className="px-4 py-2">
-                <button onClick={() => deleteReservation(reservation.Facility)} className="bg-red-500 text-white p-2 rounded">Delete</button>
               </td>
             </tr>
       ))}
