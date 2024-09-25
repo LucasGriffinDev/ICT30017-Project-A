@@ -19,13 +19,20 @@ export default function RoomManagement() {
   const [reservationList, setReservationList] = useState<ReservationMember[]>([]);
 
   useEffect(() => {
-    fetch('/api/facility')
+  fetch('/api/facility')
       .then((response) => response.json())
       .then((data) => setRoomList(data));
-      .then((response) => response.json())
-      .then((data) => setReservationList(data));
-  }, []);
+   fetch('/api/facility')
+    .then((response) => response.json())
+    .then((data) => setReservationList(data));
+  },         
+  []);
 
+
+ 
+
+
+  
   const deleteRoom = (id: string) => {
     fetch(`/api/facility/${id}`, {
       method: 'DELETE',
