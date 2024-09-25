@@ -2,88 +2,75 @@
 
 import React, { useState, useEffect } from 'react';
 
-type StaffMember = {
-  id: string;
-  name: string;
-  role: string;
-  qualifications: string;
-  employmentType: string;
-  remuneration: string;
-  training: string;
+type ReserveMember = {
+  facility: string;
+  reservation: string;
+  member: string;
 };
 
-export default function StaffManagement() {
-  // Specify that staffList is an array of StaffMember objects
-  const [staffList, setStaffList] = useState<StaffMember[]>([]);
+export default function ReservationManagement() {
+  // Specify that reserveList is an array of ReserveMember objects
+  const [reserveList, setReserveList] = useState<ReserveMember[]>([]);
 
   useEffect(() => {
-    // Fetch staff data when the component mounts
-    fetch('/api/staff')
+    // Fetch reserve data when the component mounts
+    fetch('/api/reserve')
       .then((response) => response.json())
-      .then((data) => setStaffList(data));
+      .then((data) => setReserveList(data));
   }, []);
 
-  // Specify that id is a string
-  const deleteStaff = (id: string) => {
-    fetch(`/api/staff/${id}`, {
+  // Specify that facility is a string
+  const deleteReserve = (facility: string) => {
+    fetch(`/api/reserve/${facility}`, {
       method: 'DELETE',
     }).then(() => {
-      // Filter out the staff member with the matching ID
-      setStaffList(staffList.filter((staff) => staff.id !== id));
+      // Filter out the reserve member with the matching ID
+      setReserveList(reserveList.filter((reserve) => reserve.facility !== facility));
     });
   };
 
-  const addStaff = () => {
-    // Ensure the newStaff object conforms to the StaffMember type
-    const newStaff: StaffMember = {
-      id: prompt('Enter ID:') || '', // Prompt returns null if canceled, so default to an empty string
-      name: prompt('Enter Name:') || '',
-      role: prompt('Enter Role:') || '',
+  const addReserve = () => {
+    // Ensure the newReserve object conforms to the ReserveMember type
+    const newReserve: ReserveMember = {
+      facility: prompt('Enter ID:') || '', // Prompt returns null if canceled, so default to an empty string
+      reservation: prompt('Enter Name:') || '',
+      member: prompt('Enter Role:') || '',
       qualifications: prompt('Enter Qualifications:') || '',
       employmentType: prompt('Enter Employment Type:') || '',
       remuneration: prompt('Enter Remuneration:') || '',
       training: prompt('Enter Training:') || '',
     };
     
-    fetch('/api/staff', {
+    fetch('/api/reserve', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(newStaff),
+      body: JSON.stringify(newReserve),
     }).then((response) => response.json())
-      .then((data) => setStaffList([...staffList, data]));
+      .then((data) => setReserveList([...reserveList, data]));
   };
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-around p-24">
-      <h1 className="text-4xl">Staff Management</h1>
-      <button onClick={addStaff} className="mt-4 p-2 bg-blue-500 text-white rounded">Add Staff</button>
+      <h1 className="text-4xl">Reservation Management</h1>
+      <button onClick={addReserve} className="mt-4 p-2 bg-blue-500 text-white rounded">Add Reservation</button>
       <table className="table-auto mt-8 w-full text-left">
         <thead>
           <tr>
-            <th className="px-4 py-2">ID</th>
-            <th className="px-4 py-2">Name</th>
-            <th className="px-4 py-2">Role</th>
-            <th className="px-4 py-2">Qualifications</th>
-            <th className="px-4 py-2">Employment Type</th>
-            <th className="px-4 py-2">Remuneration</th>
-            <th className="px-4 py-2">Training</th>
-            <th className="px-4 py-2">Actions</th>
+            <th className="px-4 py-2">Facility</th>
+            <th className="px-4 py-2">Reservation</th>
+            <th className="px-4 py-2">Member</th>
           </tr>
         </thead>
         <tbody>
-          {staffList.map((staff) => (
-            <tr key={staff.id} className="border-t">
-              <td className="px-4 py-2">{staff.id}</td>
-              <td className="px-4 py-2">{staff.name}</td>
-              <td className="px-4 py-2">{staff.role}</td>
-              <td className="px-4 py-2">{staff.qualifications}</td>
-              <td className="px-4 py-2">{staff.employmentType}</td>
-              <td className="px-4 py-2">{staff.remuneration}</td>
-              <td className="px-4 py-2">{staff.training}</td>
+          {reserveList.map((reserve) => (
+            <tr key={reserve.facility} className="border-t">
+              <td className="px-4 py-2">{reserve.facility}</td>
+              <td className="px-4 py-2">{reserve.reservation}</td>
+              <td className="px-4 py-2">{reserve.member}</td>
               <td className="px-4 py-2">
-                <button onClick={() => deleteStaff(staff.id)} className="bg-red-500 text-white p-2 rounded">Delete</button>
+                <button onClick={() => deleteReserve(reserve.facility)} className="bg-red-500 text-white p-2 rounded">Delete</button>
               </td>
             </tr>
           ))}
