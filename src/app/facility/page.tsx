@@ -15,7 +15,7 @@ type ReservationMember = {
 
 
 
-export default function RoomManagement() {
+export default function ReservationManagement() {
   const [roomList, setRoomList] = useState<RoomMember[]>([]);
 
   useEffect(() => {
