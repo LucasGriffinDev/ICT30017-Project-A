@@ -63,7 +63,7 @@ export default function ReserveManagement() {
               <td className="px-4 py-2">{reserve.Reservation}</td>
               <td className="px-4 py-2">{reserve.Member}</td>
               <td className="px-4 py-2">
-                <button onClick={() => deleteReserve(room.facility)} className="bg-red-500 text-white p-2 rounded">Delete</button>
+                <button onClick={() => deleteReserve(reserve.facility)} className="bg-red-500 text-white p-2 rounded">Delete</button>
               </td>
             </tr>
       ))}
