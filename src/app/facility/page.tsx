@@ -16,6 +16,7 @@ type ReservationMember = {
 
 export default function RoomManagement() {
   const [roomList, setRoomList] = useState<RoomMember[]>([]);
+  const [reservationList, setReservationList] = useState<ReservationMember[]>([]);
 
   useEffect(() => {
     fetch('/api/facility')
@@ -46,13 +47,8 @@ export default function RoomManagement() {
       body: JSON.stringify(newRoom),
     }).then((response) => response.json())
       .then((data) => setRoomList([...roomList, data]));
-  };
 
-
-default function ReservationManagement() {
-  const [reservationList, setReservationList] = useState<ReservationMember[]>([]);
-
-  useEffect(() => {
+useEffect(() => {
     fetch('/api/Facility')
       .then((response) => response.json())
       .then((data) => setReservationList(data));
@@ -82,6 +78,8 @@ default function ReservationManagement() {
     }).then((response) => response.json())
       .then((data) => setReservationList([...reservationList, data]));
   };
+
+
 
 
   return (
