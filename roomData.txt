@@ -1,1 +1,1 @@
-[{"id":"1A","Availability":"Occupied","Occupant":"Vincent Ni"},{"id":"2B","Availability":"Available","Occupant":"None"},{"facility":"A","Reservation":"A","Member":"A"}]
+[{"id":"1A","Availability":"Occupied","Occupant":"Vincent Ni"},{"id":"2B","Availability":"Available","Occupant":"None"},{"facility":"A","Reservation":"A","Member":"A"},{"facility":"Gym","Reservation":"9/15 10:00-11:00","Member":"Vincent Ni"}]
