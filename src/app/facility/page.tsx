@@ -22,6 +22,8 @@ export default function RoomManagement() {
     fetch('/api/facility')
       .then((response) => response.json())
       .then((data) => setRoomList(data));
+      .then((response) => response.json())
+      .then((data) => setReservationList(data));
   }, []);
 
   const deleteRoom = (id: string) => {
@@ -49,11 +51,7 @@ export default function RoomManagement() {
       .then((data) => setRoomList([...roomList, data]));
     };
 
-useEffect(() => {
-    fetch('/api/Facility')
-      .then((response) => response.json())
-      .then((data) => setReservationList(data));
-  }, []);
+
 
   const deleteReservation = (Facility: string) => {
     fetch(`/api/Facility/${Facility}`, {
