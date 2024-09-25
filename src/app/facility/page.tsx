@@ -21,12 +21,14 @@ export default function RoomManagement() {
   useEffect(() => {
   fetch('/api/facility')
       .then((response) => response.json())
-      .then((data) => setRoomList(data));
-   fetch('/api/facility')
-    .then((response) => response.json())
-    .then((data) => setReservationList(data));
-  },         
+      .then((data) => setRoomList(data));     
   []);
+
+ useEffect(() => {
+    fetch('/api/Reservation')
+      .then((response) => response.json())
+      .then((data) => setReservationList(data));
+  }, []);
 
   const deleteRoom = (id: string) => {
     fetch(`/api/facility/${id}`, {
@@ -56,7 +58,7 @@ export default function RoomManagement() {
 
 
   const deleteReservation = (Facility: string) => {
-    fetch(`/api/Facility/${Facility}`, {
+    fetch(`/api/reservation/${Facility}`, {
       method: 'DELETE',
     }).then(() => {
       setReservationList(reservationList.filter((reservation) => reservation.Facility !== Facility));
@@ -70,7 +72,7 @@ export default function RoomManagement() {
       Member: prompt('Enter Member:') || '',
     };
     
-    fetch('/api/Facility', {
+    fetch('/api/reservation', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
