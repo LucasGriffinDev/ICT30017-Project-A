@@ -42,6 +42,47 @@ export default function RoomManagement() {
       .then((data) => setRoomList([...roomList, data]));
   };
 
+  type ReservationMember = {
+  Facility: string;
+  Reservation: string;
+  Member: string;
+};
+
+export default function ReservationManagement() {
+  const [reservationList, setReservationList] = useState<ReservationMember[]>([]);
+
+  useEffect(() => {
+    fetch('/api/Facility')
+      .then((response) => response.json())
+      .then((data) => setReservationList(data));
+  }, []);
+
+  const deleteReservation = (Facility: string) => {
+    fetch(`/api/Facility/${Facility}`, {
+      method: 'DELETE',
+    }).then(() => {
+      setReservationList(reservationList.filter((reservation) => reservation.Facility !== Facility));
+    });
+  };
+
+  const addReservation = () => {
+    const newReservation: ReservationMember = {
+      Facility: prompt('Enter Facility:') || '', // Prompt returns null if canceled, so default to an empty string
+      Reservation: prompt('Enter Reservation:') || '',
+      Member: prompt('Enter Member:') || '',
+    };
+    
+    fetch('/api/Facility', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(newReservation),
+    }).then((response) => response.json())
+      .then((data) => setReservationList([...reservationList, data]));
+  };
+
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-around p-24">
       <h1 className="text-4xl">Facility Management</h1>
