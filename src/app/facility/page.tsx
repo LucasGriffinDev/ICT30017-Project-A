@@ -38,8 +38,7 @@ export default function RoomManagement() {
       Availability: prompt('Enter Availability:') || '',
       Occupant: prompt('Enter Occupant:') || '',
     };
-    };
-    
+     
     fetch('/api/facility', {
       method: 'POST',
       headers: {
@@ -48,6 +47,7 @@ export default function RoomManagement() {
       body: JSON.stringify(newRoom),
     }).then((response) => response.json())
       .then((data) => setRoomList([...roomList, data]));
+    };
 
 useEffect(() => {
     fetch('/api/Facility')
