@@ -47,8 +47,8 @@ export default function RoomManagement() {
       <h1 className="text-4xl">Facility Management</h1>
 
        <h2 className="text-3xl">Room Management</h2>
+       <button onClick={addRoom} className="mt-4 p-2 bg-blue-500 text-white rounded">Add Room</button>
       <table className="table-auto">
-      <button onClick={addRoom} className="mt-4 p-2 bg-blue-500 text-white rounded">Add Room</button>
         <thead>
           <tr>
             <th className="px-4 py-2">Room</th>
