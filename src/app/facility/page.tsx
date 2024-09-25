@@ -8,6 +8,12 @@ type RoomMember = {
   Occupant: string;
 };
 
+type ReservationMember = {
+  Facility: string;
+  Reservation: string;
+  Member: string;
+};
+
 export default function RoomManagement() {
   const [roomList, setRoomList] = useState<RoomMember[]>([]);
 
@@ -42,13 +48,8 @@ export default function RoomManagement() {
       .then((data) => setRoomList([...roomList, data]));
   };
 
-  type ReservationMember = {
-  Facility: string;
-  Reservation: string;
-  Member: string;
-};
 
-export default function ReservationManagement() {
+default function ReservationManagement() {
   const [reservationList, setReservationList] = useState<ReservationMember[]>([]);
 
   useEffect(() => {
