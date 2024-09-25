@@ -58,7 +58,7 @@ export default function ReserveManagement() {
         </thead>
         <tbody>
            {reserveList.map((reserve) => (
-            <tr key={room.facility} className="border-t">
+            <tr key={reserve.facility} className="border-t">
               <td className="px-4 py-2">{reserve.facility}</td>
               <td className="px-4 py-2">{reserve.Reservation}</td>
               <td className="px-4 py-2">{reserve.Member}</td>
