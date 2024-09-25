@@ -106,14 +106,13 @@ export default function RoomManagement() {
               <td className="px-4 py-2">{room.Reservation}</td>
               <td className="px-4 py-2">{room.Member}</td>
               <td className="px-4 py-2">
-                <button onClick={() => deleteRoom(room.facility)} className="bg-red-500 text-white p-2 rounded">Delete</button>
+                <button onClick={() => deleteRoom(room.id)} className="bg-red-500 text-white p-2 rounded">Delete</button>
               </td>
             </tr>
       ))}
         </tbody>
       </table>
 
-      
     </main>
   );
 }
