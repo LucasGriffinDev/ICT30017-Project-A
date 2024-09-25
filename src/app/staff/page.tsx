@@ -2,44 +2,44 @@
 
 import React, { useState, useEffect } from 'react';
 
-type ReserveMember = {
+type RoomMember = {
   facility: string;
-  reservation: string;
-  member: string;
+  Reservation: string;
+  Member: string;
 };
 
-export default function ReservationManagement() {
-  const [reserveList, setReserveList] = useState<ReserveMember[]>([]);
+export default function RoomManagement() {
+  const [roomList, setRoomList] = useState<RoomMember[]>([]);
 
   useEffect(() => {
-    fetch('/api/reserve')
+    fetch('/api/facility')
       .then((response) => response.json())
-      .then((data) => setReserveList(data));
+      .then((data) => setRoomList(data));
   }, []);
 
-  const deleteReserve = (facility: string) => {
-    fetch(`/api/reserve/${facility}`, {
+  const deleteRoom = (facility: string) => {
+    fetch(`/api/facility/${facility}`, {
       method: 'DELETE',
     }).then(() => {
-      setReserveList(reserveList.filter((reserve) => reserve.facility !== facility));
+      setRoomList(roomList.filter((room) => room.facility !== facility));
     });
   };
 
-  const addReserve = () => {
-    const newReserve: ReserveMember = {
+  const addRoom = () => {
+    const newRoom: RoomMember = {
       facility: prompt('Enter Room ID:') || '', // Prompt returns null if canceled, so default to an empty string
-      reservation: prompt('Enter reservation:') || '',
-      member: prompt('Enter member:') || '',
+      Reservation: prompt('Enter Reservation:') || '',
+      Member: prompt('Enter Member:') || '',
     };
     
-    fetch('/api/reserve', {
+    fetch('/api/facility', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(newReserve),
+      body: JSON.stringify(newRoom),
     }).then((response) => response.json())
-      .then((data) => setReserveList([...reserveList, data]));
+      .then((data) => setRoomList([...roomList, data]));
   };
 
   return (
@@ -47,7 +47,7 @@ export default function ReservationManagement() {
       <h1 className="text-4xl">Facility Management</h1>
 
        <h2 className="text-3xl">Room Management</h2>
-       <button onClick={addReserve} className="mt-4 p-2 bg-blue-500 text-white rounded">Add Room</button>
+       <button onClick={addRoom} className="mt-4 p-2 bg-blue-500 text-white rounded">Add Room</button>
       <table className="table-auto">
         <thead>
           <tr>
@@ -57,13 +57,13 @@ export default function ReservationManagement() {
           </tr>
         </thead>
         <tbody>
-           {reserveList.map((reserve) => (
-            <tr key={reserve.facility} className="border-t">
-              <td className="px-4 py-2">{reserve.facility}</td>
-              <td className="px-4 py-2">{reserve.reservation}</td>
-              <td className="px-4 py-2">{reserve.member}</td>
+           {roomList.map((room) => (
+            <tr key={room.facility} className="border-t">
+              <td className="px-4 py-2">{room.facility}</td>
+              <td className="px-4 py-2">{room.Reservation}</td>
+              <td className="px-4 py-2">{room.Member}</td>
               <td className="px-4 py-2">
-                <button onClick={() => deleteReserve(reserve.facility)} className="bg-red-500 text-white p-2 rounded">Delete</button>
+                <button onClick={() => deleteRoom(room.facility)} className="bg-red-500 text-white p-2 rounded">Delete</button>
               </td>
             </tr>
       ))}
