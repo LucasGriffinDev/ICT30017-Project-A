@@ -10,13 +10,13 @@ export default function ReservationManagement() {
   const [reservationList, setReservationList] = useState<ReservationMember[]>([]);
 
   useEffect(() => {
-    fetch('/api/Facility')
+    fetch('/api/reservation')
       .then((response) => response.json())
       .then((data) => setReservationList(data));
   }, []);
 
   const deleteReservation = (Facility: string) => {
-    fetch(`/api/Facility/${Facility}`, {
+    fetch(`/api/reservation/${Facility}`, {
       method: 'DELETE',
     }).then(() => {
       setReservationList(reservationList.filter((reservation) => reservation.Facility !== Facility));
@@ -30,7 +30,7 @@ export default function ReservationManagement() {
       Member: prompt('Enter Member:') || '',
     };
     
-    fetch('/api/Facility', {
+    fetch('/api/reservation', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
