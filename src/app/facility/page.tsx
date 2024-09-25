@@ -78,7 +78,7 @@ export default function RoomManagement() {
   );
 }
 
-export default function ReservationManagement() {
+export function ReservationManagement() {
   const [reservationList, setReservationList] = useState<ReservationMember[]>([]);
 
   useEffect(() => {
