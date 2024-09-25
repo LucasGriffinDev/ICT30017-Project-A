@@ -2,52 +2,52 @@
 
 import React, { useState, useEffect } from 'react';
 
-type RoomMember = {
+type ReserveMember = {
   facility: string;
   Reservation: string;
   Member: string;
 };
 
-export default function RoomManagement() {
-  const [roomList, setRoomList] = useState<RoomMember[]>([]);
+export default function ReserveManagement() {
+  const [reserveList, setReserveList] = useState<ReserveMember[]>([]);
 
   useEffect(() => {
-    fetch('/api/facility')
+    fetch('/api/reserve')
       .then((response) => response.json())
-      .then((data) => setRoomList(data));
+      .then((data) => setReserveList(data));
   }, []);
 
-  const deleteRoom = (facility: string) => {
-    fetch(`/api/facility/${facility}`, {
+  const deleteReserve = (facility: string) => {
+    fetch(`/api/reserve/${facility}`, {
       method: 'DELETE',
     }).then(() => {
-      setRoomList(roomList.filter((room) => room.facility !== facility));
+      setReserveList(reserveList.filter((room) => reserve.facility !== facility));
     });
   };
 
-  const addRoom = () => {
-    const newRoom: RoomMember = {
+  const addReserve = () => {
+    const newReserve: ReserveMember = {
       facility: prompt('Enter Room ID:') || '', // Prompt returns null if canceled, so default to an empty string
       Reservation: prompt('Enter Reservation:') || '',
       Member: prompt('Enter Member:') || '',
     };
     
-    fetch('/api/facility', {
+    fetch('/api/reserve', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(newRoom),
     }).then((response) => response.json())
-      .then((data) => setRoomList([...roomList, data]));
+      .then((data) => setReserveList([...reserveList, data]));
   };
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-around p-24">
       <h1 className="text-4xl">Facility Management</h1>
 
-       <h2 className="text-3xl">Room Management</h2>
-       <button onClick={addRoom} className="mt-4 p-2 bg-blue-500 text-white rounded">Add Room</button>
+       <h2 className="text-3xl">Reserve Management</h2>
+       <button onClick={addReserve} className="mt-4 p-2 bg-blue-500 text-white rounded">Add Reservation</button>
       <table className="table-auto">
         <thead>
           <tr>
@@ -57,13 +57,13 @@ export default function RoomManagement() {
           </tr>
         </thead>
         <tbody>
-           {roomList.map((room) => (
+           {reserveList.map((reserve) => (
             <tr key={room.facility} className="border-t">
               <td className="px-4 py-2">{room.facility}</td>
               <td className="px-4 py-2">{room.Reservation}</td>
               <td className="px-4 py-2">{room.Member}</td>
               <td className="px-4 py-2">
-                <button onClick={() => deleteRoom(room.facility)} className="bg-red-500 text-white p-2 rounded">Delete</button>
+                <button onClick={() => deleteReserve(room.facility)} className="bg-red-500 text-white p-2 rounded">Delete</button>
               </td>
             </tr>
       ))}
