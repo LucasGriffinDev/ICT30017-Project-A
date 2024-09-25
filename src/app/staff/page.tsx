@@ -59,9 +59,9 @@ export default function ReserveManagement() {
         <tbody>
            {reserveList.map((reserve) => (
             <tr key={room.facility} className="border-t">
-              <td className="px-4 py-2">{room.facility}</td>
-              <td className="px-4 py-2">{room.Reservation}</td>
-              <td className="px-4 py-2">{room.Member}</td>
+              <td className="px-4 py-2">{reserve.facility}</td>
+              <td className="px-4 py-2">{reserve.Reservation}</td>
+              <td className="px-4 py-2">{reserve.Member}</td>
               <td className="px-4 py-2">
                 <button onClick={() => deleteReserve(room.facility)} className="bg-red-500 text-white p-2 rounded">Delete</button>
               </td>
