@@ -28,11 +28,6 @@ export default function RoomManagement() {
   },         
   []);
 
-
- 
-
-
-  
   const deleteRoom = (id: string) => {
     fetch(`/api/facility/${id}`, {
       method: 'DELETE',
