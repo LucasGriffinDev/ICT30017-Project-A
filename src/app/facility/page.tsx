@@ -22,7 +22,7 @@ export default function RoomManagement() {
   fetch('/api/facility')
       .then((response) => response.json())
       .then((data) => setRoomList(data));     
-  []);
+ }, []);
 
  useEffect(() => {
     fetch('/api/Reservation')
