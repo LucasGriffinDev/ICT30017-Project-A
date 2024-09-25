@@ -75,7 +75,7 @@ const [reserveList, setReserveList] = useState<ReserveMember[]>([]);
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(newRoom),
+      body: JSON.stringify(newReserve),
     }).then((response) => response.json())
       .then((data) => setReserveList([...reserveList, data]));
   };
