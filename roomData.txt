@@ -1,1 +1,1 @@
-[{"id":"1","Availability":"Yes","Occupant":"Vincent"},{"id":"This","Availability":"is a","Occupant":"test"}]
+[{"id":"1A","Availability":"Occupied","Occupant":"Vincent Ni"},{"id":"2B","Availability":"Avalable","Occupant":""}]
