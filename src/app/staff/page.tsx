@@ -21,7 +21,7 @@ export default function ReserveManagement() {
     fetch(`/api/reserve/${facility}`, {
       method: 'DELETE',
     }).then(() => {
-      setReserveList(reserveList.filter((room) => reserve.facility !== facility));
+      setReserveList(reserveList.filter((reserve) => reserve.facility !== facility));
     });
   };
 
