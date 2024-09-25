@@ -38,6 +38,7 @@ export default function RoomManagement() {
       Availability: prompt('Enter Availability:') || '',
       Occupant: prompt('Enter Occupant:') || '',
     };
+    };
     
     fetch('/api/facility', {
       method: 'POST',
@@ -78,9 +79,6 @@ useEffect(() => {
     }).then((response) => response.json())
       .then((data) => setReservationList([...reservationList, data]));
   };
-
-
-
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-around p-24">
@@ -135,5 +133,4 @@ useEffect(() => {
       </table>
     </main>
   );
-}
-}
+
