@@ -6,6 +6,9 @@ type RoomMember = {
   id: string;
   Availability: string;
   Occupant: string;
+  facility: string;
+  Reservation: string;
+  Member: string;
 };
 
 export default function RoomManagement() {
@@ -41,7 +44,23 @@ export default function RoomManagement() {
     }).then((response) => response.json())
       .then((data) => setRoomList([...roomList, data]));
   };
-
+  
+  const addReserve = () => {
+    const newRoom: RoomMember = {
+      facility: prompt('Enter Facility:') || '', 
+      Reservation: prompt('Enter Reservation:') || '',
+      Member: prompt('Enter Member:') || '',
+    };
+    fetch('/api/facility', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(newRoom),
+    }).then((response) => response.json())
+      .then((data) => setRoomList([...roomList, data]));
+  };
+    
   return (
     <main className="flex min-h-screen flex-col items-center justify-around p-24">
       <h1 className="text-4xl">Facility Management</h1>
@@ -64,6 +83,30 @@ export default function RoomManagement() {
               <td className="px-4 py-2">{room.Occupant}</td>
               <td className="px-4 py-2">
                 <button onClick={() => deleteRoom(room.id)} className="bg-red-500 text-white p-2 rounded">Delete</button>
+              </td>
+            </tr>
+      ))}
+        </tbody>
+      </table>
+
+      <h2 className="text-3xl">Reservation Management</h2>
+       <button onClick={addReserve} className="mt-4 p-2 bg-blue-500 text-white rounded">Add Reservation</button>
+      <table className="table-auto">
+        <thead>
+          <tr>
+            <th className="px-4 py-2">Facility</th>
+            <th className="px-4 py-2">Reservation</th>
+            <th className="px-4 py-2">Member</th>
+          </tr>
+        </thead>
+        <tbody>
+           {roomList.map((room) => (
+            <tr key={room.facility} className="border-t">
+              <td className="px-4 py-2">{room.facility}</td>
+              <td className="px-4 py-2">{room.Reservation}</td>
+              <td className="px-4 py-2">{room.Member}</td>
+              <td className="px-4 py-2">
+                <button onClick={() => deleteRoom(room.facility)} className="bg-red-500 text-white p-2 rounded">Delete</button>
               </td>
             </tr>
       ))}
