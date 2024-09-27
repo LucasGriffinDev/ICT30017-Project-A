@@ -14,17 +14,25 @@ type ReserveMember = {
   Member: string;
 };
 
-type MaintenanceStatus = {
+type MaintenanceMember = {
   Room: string;
   Request: string;
   Status: string;
 };
 
+type UtilityMember = {
+  Month: string;
+  Gas: string;
+  Water: string;
+  Electricity: string;
+};
+
 export default function RoomManagement() {
 const [roomList, setRoomList] = useState<RoomMember[]>([]);
 const [reserveList, setReserveList] = useState<ReserveMember[]>([]);
-const [maintenanceList, setMaintenanceList] = useState<MaintenanceStatus[]>([]); 
-
+const [maintenanceList, setMaintenanceList] = useState<MaintenanceMember[]>([]); 
+const [utilityList, setUtilityList] = useState<UtilityMember[]>([]);
+  
   useEffect(() => {
     fetch('/api/facility')
       .then((response) => response.json())
@@ -41,7 +49,7 @@ const [maintenanceList, setMaintenanceList] = useState<MaintenanceStatus[]>([]);
 
   const addRoom = () => {
     const newRoom: RoomMember = {
-      id: prompt('Enter Room ID:') || '', // Prompt returns null if canceled, so default to an empty string
+      id: prompt('Enter Room ID:') || '', 
       Availability: prompt('Enter Availability:') || '',
       Occupant: prompt('Enter Occupant:') || '',
     };
@@ -116,6 +124,38 @@ const [maintenanceList, setMaintenanceList] = useState<MaintenanceStatus[]>([]);
       body: JSON.stringify(newMaintenance),
     }).then((response) => response.json())
       .then((data) => setMaintenanceList([...maintenanceList, data]));
+  };
+
+   useEffect(() => {
+    fetch('/api/utility')
+      .then((response) => response.json())
+      .then((data) => setUtilityList(data));
+  }, []);
+
+  const deleteUtility = (Month: string) => {
+    fetch(`/api/utility/${Month}`, {
+      method: 'DELETE',
+    }).then(() => {
+      setUtilityList(utilityList.filter((utility) => utility.Month !== Month));
+    });
+  };
+
+  const addUtility = () => {
+    const newUtility: UtilityWater = {
+      Month: prompt('Enter Month:') || '', 
+      Gas: prompt('Enter Gas Ammount:') || '',
+      Water: prompt('Enter Water Ammount:') || '',
+      Electricity: prompt('Enter Electricity Ammount:') || '',
+    };
+    
+    fetch('/api/utility', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(newUtility),
+    }).then((response) => response.json())
+      .then((data) => setUtilityList([...utilityList, data]));
   };
 
   
@@ -194,7 +234,32 @@ const [maintenanceList, setMaintenanceList] = useState<MaintenanceStatus[]>([]);
       ))}
         </tbody>
       </table>
-
+ <h2 className="text-3xl">Utility Management</h2>
+       <button onClick={addUtility} className="mt-4 p-2 bg-blue-500 text-white rounded">Add Gas</button>
+      <table className="table-auto">
+        <thead>
+          <tr>
+            <th className="px-4 py-2">Month</th>
+            <th className="px-4 py-2">Gas</th>
+            <th className="px-4 py-2">Water</th>
+            <th className="px-4 py-2">Electricity</th>
+          </tr>
+        </thead>
+        <tbody>
+           {utilityList.map((utility) => (
+            <tr key={utility.Month} className="border-t">
+              <td className="px-4 py-2">{utility.Month}</td>
+              <td className="px-4 py-2">{utility.Gas}</td>
+              <td className="px-4 py-2">{utility.Water}</td>
+              <td className="px-4 py-2">{utility.Electricity}</td>
+              <td className="px-4 py-2">
+                <button onClick={() => deleteUtility(utility.Month)} className="bg-red-500 text-white p-2 rounded">Delete</button>
+              </td>
+            </tr>
+      ))}
+        </tbody>
+      </table>
+      
     </main>
   );
 }
