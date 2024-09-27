@@ -14,10 +14,17 @@ type ReserveMember = {
   Member: string;
 };
 
+type MaintenanceStatus = {
+  Room: string;
+  Request: string;
+  Status: string;
+};
+
 export default function RoomManagement() {
 const [roomList, setRoomList] = useState<RoomMember[]>([]);
 const [reserveList, setReserveList] = useState<ReserveMember[]>([]);
-  
+const [maintenanceList, setMaintenanceList] = useState<MaintenanceStatus[]>([]); 
+
   useEffect(() => {
     fetch('/api/facility')
       .then((response) => response.json())
@@ -79,6 +86,38 @@ const [reserveList, setReserveList] = useState<ReserveMember[]>([]);
     }).then((response) => response.json())
       .then((data) => setReserveList([...reserveList, data]));
   };
+
+   useEffect(() => {
+    fetch('/api/maintenance')
+      .then((response) => response.json())
+      .then((data) => setMaintenanceList(data));
+  }, []);
+
+  const deleteMaintenance = (Room: string) => {
+    fetch(`/api/maintenance/${Room}`, {
+      method: 'DELETE',
+    }).then(() => {
+      setMaintenanceList(maintenanceList.filter((maintenance) => maintenance.Room !== Room));
+    });
+  };
+
+  const addMaintenance = () => {
+    const newMaintenance: MaintenanceStatus = {
+      Room: prompt('Enter Room ID:') || '', // Prompt returns null if canceled, so default to an empty string
+      Request: prompt('Enter Request:') || '',
+      Status: prompt('Enter Status:') || '',
+    };
+    
+    fetch('/api/maintenance', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(newRoom),
+    }).then((response) => response.json())
+      .then((data) => setMaintenanceList([...maintenanceList, data]));
+  };
+
   
   return (
     <main className="flex min-h-screen flex-col items-center justify-around p-24">
@@ -131,6 +170,31 @@ const [reserveList, setReserveList] = useState<ReserveMember[]>([]);
       ))}
         </tbody>
       </table>
+
+       <h2 className="text-3xl">Maintenance Management</h2>
+       <button onClick={addMaintenance} className="mt-4 p-2 bg-blue-500 text-white rounded">Add Request</button>
+      <table className="table-auto">
+        <thead>
+          <tr>
+            <th className="px-4 py-2">Room</th>
+            <th className="px-4 py-2">Request</th>
+            <th className="px-4 py-2">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+           {maintenanceList.map((maintenance) => (
+            <tr key={maintenance.Room} className="border-t">
+              <td className="px-4 py-2">{maintenance.Room}</td>
+              <td className="px-4 py-2">{maintenance.Request}</td>
+              <td className="px-4 py-2">{maintenance.Status}</td>
+              <td className="px-4 py-2">
+                <button onClick={() => deleteMaintenance(maintenance.Room)} className="bg-red-500 text-white p-2 rounded">Delete</button>
+              </td>
+            </tr>
+      ))}
+        </tbody>
+      </table>
+
     </main>
   );
 }
