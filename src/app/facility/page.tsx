@@ -113,7 +113,7 @@ const [maintenanceList, setMaintenanceList] = useState<MaintenanceStatus[]>([]);
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(newRoom),
+      body: JSON.stringify(newMaintenance),
     }).then((response) => response.json())
       .then((data) => setMaintenanceList([...maintenanceList, data]));
   };
