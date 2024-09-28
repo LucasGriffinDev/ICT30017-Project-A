@@ -163,9 +163,11 @@ const [utilityList, setUtilityList] = useState<UtilityMember[]>([]);
     <main className="flex min-h-screen flex-col items-center justify-around p-24">
       <h1 className="text-4xl">Facility Management</h1>
 <br></br>
+      <br></br>
        <h2 className="text-3xl">Room Management</h2>
       <br></br>
        <button onClick={addRoom} className="mt-4 p-2 bg-blue-500 text-white rounded">Add Room</button>
+      <br></br>
       <table className="table-auto">
         <thead>
           <tr>
@@ -191,6 +193,7 @@ const [utilityList, setUtilityList] = useState<UtilityMember[]>([]);
       <h2 className="text-3xl">Reserve Management</h2>
       <br></br>
        <button onClick={addReserve} className="mt-4 p-2 bg-blue-500 text-white rounded">Add Reservation</button>
+      <br></br>
       <table className="table-auto">
         <thead>
           <tr>
@@ -216,6 +219,7 @@ const [utilityList, setUtilityList] = useState<UtilityMember[]>([]);
        <h2 className="text-3xl">Maintenance Management</h2>
       <br></br>
        <button onClick={addMaintenance} className="mt-4 p-2 bg-blue-500 text-white rounded">Add Request</button>
+      <br></br>
       <table className="table-auto">
         <thead>
           <tr>
@@ -240,7 +244,8 @@ const [utilityList, setUtilityList] = useState<UtilityMember[]>([]);
       <br></br>
  <h2 className="text-3xl">Utility Management</h2>
       <br></br>
-       <button onClick={addUtility} className="mt-4 p-2 bg-blue-500 text-white rounded">Add Gas</button>
+       <button onClick={addUtility} className="mt-4 p-2 bg-blue-500 text-white rounded">Add Utility</button>
+      <br></br>
       <table className="table-auto">
         <thead>
           <tr>
