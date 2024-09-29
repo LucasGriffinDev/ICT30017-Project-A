@@ -1,7 +1,9 @@
-'use client'; // Add this at the top
+// pages/staff.js
+
+'use client';
 
 import React, { useState, useEffect } from 'react';
-
+import AddStaffModal from '../../components/AddStaffModal'; // Adjust the path based on your folder structure
 type StaffMember = {
   id: string;
   name: string;
@@ -13,58 +15,52 @@ type StaffMember = {
 };
 
 export default function StaffManagement() {
-  // Specify that staffList is an array of StaffMember objects
   const [staffList, setStaffList] = useState<StaffMember[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
-    // Fetch staff data when the component mounts
-    fetch('/api/staff')
-      .then((response) => response.json())
-      .then((data) => setStaffList(data));
+    // Load staff data from local storage when the component mounts
+    const storedStaff = localStorage.getItem('staffList');
+    if (storedStaff) {
+      setStaffList(JSON.parse(storedStaff));
+    }
   }, []);
 
-  // Specify that id is a string
+  useEffect(() => {
+    // Save staff data to local storage whenever it changes
+    localStorage.setItem('staffList', JSON.stringify(staffList));
+  }, [staffList]);
+
   const deleteStaff = (id: string) => {
-    fetch(`/api/staff/${id}`, {
-      method: 'DELETE',
-    }).then(() => {
-      // Filter out the staff member with the matching ID
-      setStaffList(staffList.filter((staff) => staff.id !== id));
-    });
+    const updatedList = staffList.filter((staff) => staff.id !== id);
+    setStaffList(updatedList);
   };
 
-  const addStaff = () => {
-    // Ensure the newStaff object conforms to the StaffMember type
-    const newStaff: StaffMember = {
-      id: prompt('Enter ID:') || '', // Prompt returns null if canceled, so default to an empty string
-      name: prompt('Enter Name:') || '',
-      role: prompt('Enter Role:') || '',
-      qualifications: prompt('Enter Qualifications:') || '',
-      employmentType: prompt('Enter Employment Type:') || '',
-      remuneration: prompt('Enter Remuneration:') || '',
-      training: prompt('Enter Training:') || '',
-    };
-
-    fetch('/api/staff', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(newStaff),
-    })
-      .then((response) => response.json())
-      .then((data) => setStaffList([...staffList, data]));
+  const addStaff = (newStaff: StaffMember) => {
+    // Check if ID already exists
+    if (staffList.some((staff) => staff.id === newStaff.id)) {
+      alert('A staff member with this ID already exists.');
+      return;
+    }
+    setStaffList([...staffList, newStaff]);
   };
 
   return (
-    <main className="flex flex-col items-center justify-around p-24">
-      <h1 className="text-4xl">Staff Management</h1>
+    <main className="flex flex-col items-center p-8">
+      <h1 className="text-4xl font-bold mb-6 text-blue-900">
+        Staff Management
+      </h1>
       <button
-        onClick={addStaff}
+        onClick={() => setIsModalOpen(true)}
         className="mt-4 p-2 bg-blue-500 text-white rounded"
       >
         Add Staff
       </button>
+      <AddStaffModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSave={addStaff}
+      />
       <table className="table-auto mt-8 w-full text-left">
         <thead>
           <tr>
