@@ -30,7 +30,7 @@ export default function Home() {
     },
     {
       link: '/scheduling',
-      title: 'Staff Scheduling',
+      title: 'Scheduling Management',
       description:
         'Organize and track staff assignments and scheduling conflicts.',
     },
