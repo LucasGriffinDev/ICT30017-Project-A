@@ -1,4 +1,4 @@
-"use client"; // Add this at the top
+'use client'; // Add this at the top
 
 import React, { useState, useEffect } from 'react';
 
@@ -44,21 +44,27 @@ export default function StaffManagement() {
       remuneration: prompt('Enter Remuneration:') || '',
       training: prompt('Enter Training:') || '',
     };
-    
+
     fetch('/api/staff', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(newStaff),
-    }).then((response) => response.json())
+    })
+      .then((response) => response.json())
       .then((data) => setStaffList([...staffList, data]));
   };
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-around p-24">
+    <main className="flex flex-col items-center justify-around p-24">
       <h1 className="text-4xl">Staff Management</h1>
-      <button onClick={addStaff} className="mt-4 p-2 bg-blue-500 text-white rounded">Add Staff</button>
+      <button
+        onClick={addStaff}
+        className="mt-4 p-2 bg-blue-500 text-white rounded"
+      >
+        Add Staff
+      </button>
       <table className="table-auto mt-8 w-full text-left">
         <thead>
           <tr>
@@ -83,7 +89,12 @@ export default function StaffManagement() {
               <td className="px-4 py-2">{staff.remuneration}</td>
               <td className="px-4 py-2">{staff.training}</td>
               <td className="px-4 py-2">
-                <button onClick={() => deleteStaff(staff.id)} className="bg-red-500 text-white p-2 rounded">Delete</button>
+                <button
+                  onClick={() => deleteStaff(staff.id)}
+                  className="bg-red-500 text-white p-2 rounded"
+                >
+                  Delete
+                </button>
               </td>
             </tr>
           ))}
@@ -92,4 +103,3 @@ export default function StaffManagement() {
     </main>
   );
 }
-
