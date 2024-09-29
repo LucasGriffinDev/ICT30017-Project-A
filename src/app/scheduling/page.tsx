@@ -12,6 +12,7 @@ interface Schedule {
   day: string;
   startTime: string;
   endTime: string;
+  duration: string;
 }
 
 export default function SchedulingManagement() {
@@ -23,6 +24,7 @@ export default function SchedulingManagement() {
   const [day, setDay] = useState('');
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
+  const [duration, setDuration] = useState('');
   const [errors, setErrors] = useState<string[]>([]);
 
   // Load schedules from local storage on component mount
@@ -34,6 +36,74 @@ export default function SchedulingManagement() {
       }
     }
   }, []);
+
+  // Options for days and shifts
+  const daysOfWeek = [
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+    'Sunday',
+  ];
+  const shiftOptions = ['Morning', 'Afternoon', 'Evening', 'Night'];
+
+  // Generate time options at 15-minute intervals
+  const generateTimeOptions = () => {
+    const times = [];
+    for (let i = 0; i < 24; i++) {
+      for (let j = 0; j < 60; j += 15) {
+        const hours = i % 12 === 0 ? 12 : i % 12;
+        const minutes = j.toString().padStart(2, '0');
+        const period = i < 12 ? 'AM' : 'PM';
+        times.push(`${hours}:${minutes} ${period}`);
+      }
+    }
+    return times;
+  };
+
+  const convertTo24Hour = (time: string) => {
+    const [hourMinute, period] = time.split(' ');
+    let [hour, minute] = hourMinute.split(':').map(Number);
+    if (period === 'PM' && hour !== 12) {
+      hour += 12;
+    } else if (period === 'AM' && hour === 12) {
+      hour = 0;
+    }
+    return `${hour.toString().padStart(2, '0')}:${minute
+      .toString()
+      .padStart(2, '0')}`;
+  };
+
+  const timeOptions = generateTimeOptions();
+
+  // Calculate duration in hours and minutes whenever startTime or endTime changes
+  useEffect(() => {
+    if (startTime && endTime) {
+      const start = new Date(`1970-01-01T${convertTo24Hour(startTime)}:00`);
+      const end = new Date(`1970-01-01T${convertTo24Hour(endTime)}:00`);
+      const diffInMs = end.getTime() - start.getTime();
+      if (diffInMs > 0) {
+        const totalMinutes = diffInMs / (1000 * 60); // total duration in minutes
+        const hours = Math.floor(totalMinutes / 60);
+        const minutes = totalMinutes % 60;
+        let durationString = '';
+        if (hours > 0) {
+          durationString += `${hours} hour${hours > 1 ? 's' : ''}`;
+        }
+        if (minutes > 0) {
+          if (hours > 0) durationString += ' ';
+          durationString += `${minutes} minute${minutes > 1 ? 's' : ''}`;
+        }
+        setDuration(durationString);
+      } else {
+        setDuration('');
+      }
+    } else {
+      setDuration('');
+    }
+  }, [startTime, endTime]);
 
   // Function to add a new schedule
   const addSchedule = (e: React.FormEvent) => {
@@ -54,14 +124,30 @@ export default function SchedulingManagement() {
       return;
     }
 
+    // Validate time order
+    const start = new Date(`1970-01-01T${convertTo24Hour(startTime)}:00`);
+    const end = new Date(`1970-01-01T${convertTo24Hour(endTime)}:00`);
+    if (start >= end) {
+      setErrors((prev) => [...prev, 'End time must be after start time.']);
+      return;
+    }
+
     // Check for time conflicts
     const hasConflict = schedules.some((schedule) => {
+      if (schedule.staffId !== staffId || schedule.day !== day) {
+        return false;
+      }
+      const existingStart = new Date(
+        `1970-01-01T${convertTo24Hour(schedule.startTime)}:00`
+      );
+      const existingEnd = new Date(
+        `1970-01-01T${convertTo24Hour(schedule.endTime)}:00`
+      );
+
       return (
-        schedule.staffId === staffId &&
-        schedule.day === day &&
-        ((startTime >= schedule.startTime && startTime < schedule.endTime) ||
-          (endTime > schedule.startTime && endTime <= schedule.endTime) ||
-          (startTime <= schedule.startTime && endTime >= schedule.endTime))
+        (start >= existingStart && start < existingEnd) ||
+        (end > existingStart && end <= existingEnd) ||
+        (start <= existingStart && end >= existingEnd)
       );
     });
 
@@ -81,6 +167,7 @@ export default function SchedulingManagement() {
       day,
       startTime,
       endTime,
+      duration,
     };
 
     const updatedSchedules = [...schedules, newSchedule];
@@ -99,6 +186,7 @@ export default function SchedulingManagement() {
     setDay('');
     setStartTime('');
     setEndTime('');
+    setDuration('');
   };
 
   // Function to delete a schedule
@@ -111,18 +199,6 @@ export default function SchedulingManagement() {
       localStorage.setItem('schedules', JSON.stringify(updatedSchedules));
     }
   };
-
-  // Options for days and shifts
-  const daysOfWeek = [
-    'Monday',
-    'Tuesday',
-    'Wednesday',
-    'Thursday',
-    'Friday',
-    'Saturday',
-    'Sunday',
-  ];
-  const shiftOptions = ['Morning', 'Afternoon', 'Evening', 'Night'];
 
   return (
     <main className="flex flex-col items-center p-8">
@@ -223,23 +299,47 @@ export default function SchedulingManagement() {
                 <label className="block text-gray-700 font-bold mb-2">
                   Start Time
                 </label>
-                <input
-                  type="time"
+                <select
                   value={startTime}
                   onChange={(e) => setStartTime(e.target.value)}
                   className="border rounded w-full py-2 px-3"
-                />
+                >
+                  <option value="">Select a start time</option>
+                  {timeOptions.map((time, index) => (
+                    <option key={index} value={time}>
+                      {time}
+                    </option>
+                  ))}
+                </select>
               </div>
               {/* End Time */}
               <div>
                 <label className="block text-gray-700 font-bold mb-2">
                   End Time
                 </label>
-                <input
-                  type="time"
+                <select
                   value={endTime}
                   onChange={(e) => setEndTime(e.target.value)}
                   className="border rounded w-full py-2 px-3"
+                >
+                  <option value="">Select an end time</option>
+                  {timeOptions.map((time, index) => (
+                    <option key={index} value={time}>
+                      {time}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              {/* Duration */}
+              <div>
+                <label className="block text-gray-700 font-bold mb-2">
+                  Shift Duration
+                </label>
+                <input
+                  type="text"
+                  value={duration}
+                  readOnly
+                  className="border rounded w-full py-2 px-3 bg-gray-100"
                 />
               </div>
             </div>
@@ -281,6 +381,9 @@ export default function SchedulingManagement() {
                     End Time
                   </th>
                   <th className="px-4 py-2 text-xl font-bold bg-blue-900 text-white border-b">
+                    Duration
+                  </th>
+                  <th className="px-4 py-2 text-xl font-bold bg-blue-900 text-white border-b">
                     Actions
                   </th>
                 </tr>
@@ -298,6 +401,7 @@ export default function SchedulingManagement() {
                     <td className="border px-4 py-2">{schedule.day}</td>
                     <td className="border px-4 py-2">{schedule.startTime}</td>
                     <td className="border px-4 py-2">{schedule.endTime}</td>
+                    <td className="border px-4 py-2">{schedule.duration}</td>
                     <td className="border px-4 py-2">
                       <button
                         onClick={() => deleteSchedule(index)}
@@ -311,7 +415,7 @@ export default function SchedulingManagement() {
                 {schedules.length === 0 && (
                   <tr>
                     <td
-                      colSpan={8}
+                      colSpan={9}
                       className="border px-4 py-2 text-center text-gray-500"
                     >
                       No schedules available.

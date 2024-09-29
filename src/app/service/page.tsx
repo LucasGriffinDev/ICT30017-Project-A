@@ -1,101 +1,55 @@
-// pages/service.js
+// pages/scheduling.js
 
 'use client';
 
 import React, { useState, useEffect } from 'react';
 
-interface Booking {
-  service: string;
-  date: string;
+interface Schedule {
+  staffId: string;
+  name: string;
+  position: string;
+  shift: string;
+  day: string;
   startTime: string;
   endTime: string;
   duration: string;
-  staff: string;
 }
 
-export default function ServiceManagement() {
-  const [service, setService] = useState<string>('');
-  const [date, setDate] = useState<string>('');
-  const [startTime, setStartTime] = useState<string>('');
-  const [endTime, setEndTime] = useState<string>('');
-  const [duration, setDuration] = useState<string>('');
-  const [staff, setStaff] = useState<string>('');
-  const [bookings, setBookings] = useState<Booking[]>([]);
+export default function SchedulingManagement() {
+  const [schedules, setSchedules] = useState<Schedule[]>([]);
+  const [staffId, setStaffId] = useState('');
+  const [name, setName] = useState('');
+  const [position, setPosition] = useState('');
+  const [shift, setShift] = useState('');
+  const [day, setDay] = useState('');
+  const [startTime, setStartTime] = useState('');
+  const [endTime, setEndTime] = useState('');
+  const [duration, setDuration] = useState('');
   const [errors, setErrors] = useState<string[]>([]);
 
+  // Load schedules from local storage on component mount
   useEffect(() => {
-    const savedBookings = localStorage.getItem('bookingData');
-    if (savedBookings) {
-      setBookings(JSON.parse(savedBookings));
+    if (typeof window !== 'undefined') {
+      const storedSchedules = localStorage.getItem('schedules');
+      if (storedSchedules) {
+        setSchedules(JSON.parse(storedSchedules));
+      }
     }
   }, []);
 
-  const staffOptions = ['John Doe', 'Jane Smith', 'Mike Johnson'];
+  // Options for days and shifts
+  const daysOfWeek = [
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+    'Sunday',
+  ];
+  const shiftOptions = ['Morning', 'Afternoon', 'Evening', 'Night'];
 
-  const handleBooking = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setErrors([]);
-
-    const today = new Date().toISOString().split('T')[0];
-    if (date < today) {
-      setErrors((prev) => [...prev, 'Date cannot be in the past.']);
-      return;
-    }
-
-    if (parseFloat(duration) <= 0) {
-      setErrors((prev) => [...prev, 'Duration must be a positive number.']);
-      return;
-    }
-
-    if (new Date(startTime) >= new Date(endTime)) {
-      setErrors((prev) => [...prev, 'End time must be after start time.']);
-      return;
-    }
-
-    const bookingData: Booking = {
-      service,
-      date: formatDate(date),
-      startTime,
-      endTime,
-      duration,
-      staff,
-    };
-
-    try {
-      const updatedBookings = [...bookings, bookingData];
-      localStorage.setItem('bookingData', JSON.stringify(updatedBookings));
-      setBookings(updatedBookings);
-      alert('Booking saved to local storage');
-    } catch (error) {
-      console.error('Error:', error);
-      alert('Error saving booking');
-    }
-  };
-
-  const formatDate = (date: string) => {
-    const [year, month, day] = date.split('-');
-    return `${day}-${month}-${year}`;
-  };
-
-  const calculateDuration = () => {
-    if (startTime && endTime) {
-      const start = new Date(`1970-01-01T${convertTo24Hour(startTime)}:00`);
-      const end = new Date(`1970-01-01T${convertTo24Hour(endTime)}:00`);
-      const diff = (end.getTime() - start.getTime()) / (1000 * 60 * 60); // in hours
-      setDuration(diff.toString());
-    }
-  };
-
-  useEffect(() => {
-    calculateDuration();
-  }, [startTime, endTime]);
-
-  const handleDelete = (index: number) => {
-    const updatedBookings = bookings.filter((_, i) => i !== index);
-    localStorage.setItem('bookingData', JSON.stringify(updatedBookings));
-    setBookings(updatedBookings);
-  };
-
+  // Generate time options
   const generateTimeOptions = () => {
     const times = [];
     for (let i = 0; i < 24; i++) {
@@ -124,123 +78,124 @@ export default function ServiceManagement() {
 
   const timeOptions = generateTimeOptions();
 
+  // Calculate duration whenever startTime or endTime changes
+  useEffect(() => {
+    if (startTime && endTime) {
+      const start = new Date(`1970-01-01T${convertTo24Hour(startTime)}:00`);
+      const end = new Date(`1970-01-01T${convertTo24Hour(endTime)}:00`);
+      const diff = (end.getTime() - start.getTime()) / (1000 * 60); // in minutes
+      setDuration((diff / 60).toFixed(2)); // duration in hours with two decimals
+    } else {
+      setDuration('');
+    }
+  }, [startTime, endTime]);
+
+  // Function to add a new schedule
+  const addSchedule = (e: React.FormEvent) => {
+    e.preventDefault();
+    setErrors([]);
+
+    // Basic validation
+    if (
+      !staffId ||
+      !name ||
+      !position ||
+      !shift ||
+      !day ||
+      !startTime ||
+      !endTime
+    ) {
+      setErrors((prev) => [...prev, 'All fields are required.']);
+      return;
+    }
+
+    // Validate time order
+    const start = new Date(`1970-01-01T${convertTo24Hour(startTime)}:00`);
+    const end = new Date(`1970-01-01T${convertTo24Hour(endTime)}:00`);
+    if (start >= end) {
+      setErrors((prev) => [...prev, 'End time must be after start time.']);
+      return;
+    }
+
+    // Check for time conflicts
+    const hasConflict = schedules.some((schedule) => {
+      if (schedule.staffId !== staffId || schedule.day !== day) {
+        return false;
+      }
+      const existingStart = new Date(
+        `1970-01-01T${convertTo24Hour(schedule.startTime)}:00`
+      );
+      const existingEnd = new Date(
+        `1970-01-01T${convertTo24Hour(schedule.endTime)}:00`
+      );
+
+      return (
+        (start >= existingStart && start < existingEnd) ||
+        (end > existingStart && end <= existingEnd) ||
+        (start <= existingStart && end >= existingEnd)
+      );
+    });
+
+    if (hasConflict) {
+      setErrors((prev) => [
+        ...prev,
+        'This schedule conflicts with an existing shift for this staff member.',
+      ]);
+      return;
+    }
+
+    const newSchedule: Schedule = {
+      staffId,
+      name,
+      position,
+      shift,
+      day,
+      startTime,
+      endTime,
+      duration,
+    };
+
+    const updatedSchedules = [...schedules, newSchedule];
+    setSchedules(updatedSchedules);
+
+    // Save to Local Storage
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('schedules', JSON.stringify(updatedSchedules));
+    }
+
+    // Clear form fields
+    setStaffId('');
+    setName('');
+    setPosition('');
+    setShift('');
+    setDay('');
+    setStartTime('');
+    setEndTime('');
+    setDuration('');
+  };
+
+  // Function to delete a schedule
+  const deleteSchedule = (index: number) => {
+    const updatedSchedules = schedules.filter((_, i) => i !== index);
+    setSchedules(updatedSchedules);
+
+    // Save to Local Storage
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('schedules', JSON.stringify(updatedSchedules));
+    }
+  };
+
   return (
-    <main className="flex min-h-screen flex-col items-center p-8">
+    <main className="flex flex-col items-center p-8">
       <div className="w-full max-w-[60%] mx-auto">
         <h1 className="text-4xl font-bold mb-6 text-blue-900 text-center">
-          Service Management
+          Scheduling Management Page
         </h1>
 
-        {/* Service Catalogue */}
+        {/* Add Schedule Form */}
         <section className="mb-12">
-          <h2 className="text-3xl font-bold mb-6">Service Catalogue</h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Registered Nurse */}
-            <div className="flex flex-col items-center">
-              <img
-                src="/images/serviceImg1.jpg"
-                alt="Registered Nurse"
-                className="w-full h-auto rounded-lg"
-              />
-              <p className="mt-4 text-center">
-                <strong>Registered Nurse:</strong> <br />
-                Provide comprehensive nursing care, manage medications, monitor
-                health conditions, and develop care plans.
-              </p>
-            </div>
-
-            {/* Personal Care Assistant */}
-            <div className="flex flex-col items-center">
-              <img
-                src="/images/serviceImg2.jpg"
-                alt="Personal Care Assistant"
-                className="w-full h-auto rounded-lg"
-              />
-              <p className="mt-4 text-center">
-                <strong>Personal Care Assistants:</strong> <br />
-                Assist with daily living activities such as bathing, dressing,
-                grooming, and mobility.
-              </p>
-            </div>
-
-            {/* Activity Coordinator */}
-            <div className="flex flex-col items-center">
-              <img
-                src="/images/serviceImg3.jpg"
-                alt="Activity Coordinator"
-                className="w-full h-auto rounded-lg"
-              />
-              <p className="mt-4 text-center">
-                <strong>Activity Coordinators:</strong> <br />
-                Organize and facilitate social, recreational, and therapeutic
-                activities for residents.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* Current Bookings */}
-        <section className="mb-12">
-          <h2 className="text-3xl font-bold mb-6">Current Bookings</h2>
-          <div className="overflow-x-auto w-full">
-            <table className="table-auto w-full text-left border-collapse">
-              <thead>
-                <tr>
-                  <th className="px-4 py-2 text-xl font-bold bg-blue-900 text-white border-b">
-                    Service
-                  </th>
-                  <th className="px-4 py-2 text-xl font-bold bg-blue-900 text-white border-b">
-                    Date
-                  </th>
-                  <th className="px-4 py-2 text-xl font-bold bg-blue-900 text-white border-b">
-                    Start Time
-                  </th>
-                  <th className="px-4 py-2 text-xl font-bold bg-blue-900 text-white border-b">
-                    End Time
-                  </th>
-                  <th className="px-4 py-2 text-xl font-bold bg-blue-900 text-white border-b">
-                    Duration
-                  </th>
-                  <th className="px-4 py-2 text-xl font-bold bg-blue-900 text-white border-b">
-                    Staff
-                  </th>
-                  <th className="px-4 py-2 text-xl font-bold bg-blue-900 text-white border-b">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {bookings.map((booking, index) => (
-                  <tr
-                    key={index}
-                    className={index % 2 === 0 ? 'bg-gray-100' : 'bg-white'}
-                  >
-                    <td className="border px-4 py-2">{booking.service}</td>
-                    <td className="border px-4 py-2">{booking.date}</td>
-                    <td className="border px-4 py-2">{booking.startTime}</td>
-                    <td className="border px-4 py-2">{booking.endTime}</td>
-                    <td className="border px-4 py-2">{booking.duration}</td>
-                    <td className="border px-4 py-2">{booking.staff}</td>
-                    <td className="border px-4 py-2">
-                      <button
-                        onClick={() => handleDelete(index)}
-                        className="bg-red-500 text-white p-2 rounded"
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        {/* Booking Form */}
-        <section className="mb-12">
-          <h2 className="text-3xl font-bold mb-6">Book a Service</h2>
-          <form onSubmit={handleBooking} className="space-y-6">
+          <h2 className="text-3xl font-bold mb-6">Add Schedule</h2>
+          <form onSubmit={addSchedule} className="space-y-4">
             {errors.length > 0 && (
               <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
                 <strong className="font-bold">Error:</strong>
@@ -251,130 +206,210 @@ export default function ServiceManagement() {
                 </ul>
               </div>
             )}
-            <div>
-              <label
-                className="block text-gray-700 font-bold mb-2"
-                htmlFor="service"
-              >
-                Service
-              </label>
-              <select
-                id="service"
-                value={service}
-                onChange={(e) => setService(e.target.value)}
-                className="border rounded w-full py-2 px-3"
-              >
-                <option value="">Select a service</option>
-                <option value="Registered Nurse">Registered Nurse</option>
-                <option value="Personal Care Assistant">
-                  Personal Care Assistant
-                </option>
-                <option value="Activity Coordinator">
-                  Activity Coordinator
-                </option>
-              </select>
-            </div>
-            <div>
-              <label
-                className="block text-gray-700 font-bold mb-2"
-                htmlFor="staff"
-              >
-                Staff
-              </label>
-              <select
-                id="staff"
-                value={staff}
-                onChange={(e) => setStaff(e.target.value)}
-                className="border rounded w-full py-2 px-3"
-              >
-                <option value="">Select a staff member</option>
-                {staffOptions.map((staff, index) => (
-                  <option key={index} value={staff}>
-                    {staff}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label
-                className="block text-gray-700 font-bold mb-2"
-                htmlFor="date"
-              >
-                Date
-              </label>
-              <input
-                type="date"
-                id="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                min={new Date().toISOString().split('T')[0]}
-                className="border rounded w-full py-2 px-3"
-              />
-            </div>
-            <div>
-              <label
-                className="block text-gray-700 font-bold mb-2"
-                htmlFor="startTime"
-              >
-                Start Time
-              </label>
-              <select
-                id="startTime"
-                value={startTime}
-                onChange={(e) => setStartTime(e.target.value)}
-                className="border rounded w-full py-2 px-3"
-              >
-                <option value="">Select a start time</option>
-                {timeOptions.map((time, index) => (
-                  <option key={index} value={time}>
-                    {time}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label
-                className="block text-gray-700 font-bold mb-2"
-                htmlFor="endTime"
-              >
-                End Time
-              </label>
-              <select
-                id="endTime"
-                value={endTime}
-                onChange={(e) => setEndTime(e.target.value)}
-                className="border rounded w-full py-2 px-3"
-              >
-                <option value="">Select an end time</option>
-                {timeOptions.map((time, index) => (
-                  <option key={index} value={time}>
-                    {time}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label
-                className="block text-gray-700 font-bold mb-2"
-                htmlFor="duration"
-              >
-                Duration (hours)
-              </label>
-              <input
-                type="text"
-                id="duration"
-                value={duration}
-                readOnly
-                className="border rounded w-full py-2 px-3 bg-gray-100"
-              />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Staff ID */}
+              <div>
+                <label className="block text-gray-700 font-bold mb-2">
+                  Staff ID
+                </label>
+                <input
+                  type="text"
+                  value={staffId}
+                  onChange={(e) => setStaffId(e.target.value)}
+                  className="border rounded w-full py-2 px-3"
+                />
+              </div>
+              {/* Name */}
+              <div>
+                <label className="block text-gray-700 font-bold mb-2">
+                  Name
+                </label>
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="border rounded w-full py-2 px-3"
+                />
+              </div>
+              {/* Position */}
+              <div>
+                <label className="block text-gray-700 font-bold mb-2">
+                  Position
+                </label>
+                <input
+                  type="text"
+                  value={position}
+                  onChange={(e) => setPosition(e.target.value)}
+                  className="border rounded w-full py-2 px-3"
+                />
+              </div>
+              {/* Shift */}
+              <div>
+                <label className="block text-gray-700 font-bold mb-2">
+                  Shift
+                </label>
+                <select
+                  value={shift}
+                  onChange={(e) => setShift(e.target.value)}
+                  className="border rounded w-full py-2 px-3"
+                >
+                  <option value="">Select Shift</option>
+                  {shiftOptions.map((shiftOption, index) => (
+                    <option key={index} value={shiftOption}>
+                      {shiftOption}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              {/* Day */}
+              <div>
+                <label className="block text-gray-700 font-bold mb-2">
+                  Day
+                </label>
+                <select
+                  value={day}
+                  onChange={(e) => setDay(e.target.value)}
+                  className="border rounded w-full py-2 px-3"
+                >
+                  <option value="">Select Day</option>
+                  {daysOfWeek.map((dayOption, index) => (
+                    <option key={index} value={dayOption}>
+                      {dayOption}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              {/* Start Time */}
+              <div>
+                <label className="block text-gray-700 font-bold mb-2">
+                  Start Time
+                </label>
+                <select
+                  value={startTime}
+                  onChange={(e) => setStartTime(e.target.value)}
+                  className="border rounded w-full py-2 px-3"
+                >
+                  <option value="">Select a start time</option>
+                  {timeOptions.map((time, index) => (
+                    <option key={index} value={time}>
+                      {time}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              {/* End Time */}
+              <div>
+                <label className="block text-gray-700 font-bold mb-2">
+                  End Time
+                </label>
+                <select
+                  value={endTime}
+                  onChange={(e) => setEndTime(e.target.value)}
+                  className="border rounded w-full py-2 px-3"
+                >
+                  <option value="">Select an end time</option>
+                  {timeOptions.map((time, index) => (
+                    <option key={index} value={time}>
+                      {time}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              {/* Duration */}
+              <div>
+                <label className="block text-gray-700 font-bold mb-2">
+                  Duration (hours)
+                </label>
+                <input
+                  type="text"
+                  value={duration}
+                  readOnly
+                  className="border rounded w-full py-2 px-3 bg-gray-100"
+                />
+              </div>
             </div>
             <button
               type="submit"
               className="bg-blue-500 text-white font-bold py-2 px-4 rounded"
             >
-              Book Service
+              Add Schedule
             </button>
           </form>
+        </section>
+
+        {/* Schedule Table */}
+        <section>
+          <h2 className="text-3xl font-bold mb-6">Current Schedules</h2>
+          <div className="overflow-x-auto w-full">
+            <table className="table-auto w-full text-left border-collapse">
+              <thead>
+                <tr>
+                  <th className="px-4 py-2 text-xl font-bold bg-blue-900 text-white border-b">
+                    Staff ID
+                  </th>
+                  <th className="px-4 py-2 text-xl font-bold bg-blue-900 text-white border-b">
+                    Name
+                  </th>
+                  <th className="px-4 py-2 text-xl font-bold bg-blue-900 text-white border-b">
+                    Position
+                  </th>
+                  <th className="px-4 py-2 text-xl font-bold bg-blue-900 text-white border-b">
+                    Shift
+                  </th>
+                  <th className="px-4 py-2 text-xl font-bold bg-blue-900 text-white border-b">
+                    Day
+                  </th>
+                  <th className="px-4 py-2 text-xl font-bold bg-blue-900 text-white border-b">
+                    Start Time
+                  </th>
+                  <th className="px-4 py-2 text-xl font-bold bg-blue-900 text-white border-b">
+                    End Time
+                  </th>
+                  <th className="px-4 py-2 text-xl font-bold bg-blue-900 text-white border-b">
+                    Duration (hrs)
+                  </th>
+                  <th className="px-4 py-2 text-xl font-bold bg-blue-900 text-white border-b">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {schedules.map((schedule, index) => (
+                  <tr
+                    key={index}
+                    className={index % 2 === 0 ? 'bg-gray-100' : 'bg-white'}
+                  >
+                    <td className="border px-4 py-2">{schedule.staffId}</td>
+                    <td className="border px-4 py-2">{schedule.name}</td>
+                    <td className="border px-4 py-2">{schedule.position}</td>
+                    <td className="border px-4 py-2">{schedule.shift}</td>
+                    <td className="border px-4 py-2">{schedule.day}</td>
+                    <td className="border px-4 py-2">{schedule.startTime}</td>
+                    <td className="border px-4 py-2">{schedule.endTime}</td>
+                    <td className="border px-4 py-2">{schedule.duration}</td>
+                    <td className="border px-4 py-2">
+                      <button
+                        onClick={() => deleteSchedule(index)}
+                        className="bg-red-500 text-white p-2 rounded"
+                      >
+                        Remove
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+                {schedules.length === 0 && (
+                  <tr>
+                    <td
+                      colSpan={9}
+                      className="border px-4 py-2 text-center text-gray-500"
+                    >
+                      No schedules available.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </section>
       </div>
     </main>
