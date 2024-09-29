@@ -2,14 +2,14 @@
   "name": "ICT30017-Project-A",
   "version": "0.1.0",
   "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "export": "next export",
-    "start": "next start",
-    "lint": "next lint",
-    "deploy": "next build && next export && gh-pages -d out"
-  },
+ "scripts": {
+  "dev": "next dev",
+  "build": "next build",
+  "export": "next export",
+  "start": "next start",
+  "lint": "next lint",
+  "deploy": "next build && next export && gh-pages -d out"
+},
   "dependencies": {
     "body-parser": "^1.20.2",
     "express": "^4.19.2",
