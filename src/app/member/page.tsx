@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import DynamicTable from '../components/Table'; // Adjust the path based on your folder structure
+import DynamicTable from '../components/DynamicTable'; // Adjust the path based on your folder structure
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import Slider from 'react-slick';

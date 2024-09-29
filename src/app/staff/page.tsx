@@ -4,6 +4,15 @@
 
 import React, { useState, useEffect } from 'react';
 import AddStaffModal from '../../components/AddStaffModal'; // Adjust the path based on your folder structure
+
+// Define the TrainingCourse type
+type TrainingCourse = {
+  courseName: string;
+  completionDate: string;
+  status: string;
+};
+
+// Update the StaffMember type
 type StaffMember = {
   id: string;
   name: string;
@@ -11,7 +20,7 @@ type StaffMember = {
   qualifications: string;
   employmentType: string;
   remuneration: string;
-  training: string;
+  training: TrainingCourse[]; // Changed from string to array of TrainingCourse
 };
 
 export default function StaffManagement() {
@@ -22,27 +31,53 @@ export default function StaffManagement() {
     // Load staff data from local storage when the component mounts
     const storedStaff = localStorage.getItem('staffList');
     if (storedStaff) {
-      setStaffList(JSON.parse(storedStaff));
+      const parsedStaffList = JSON.parse(storedStaff);
+
+      // Transform the data if necessary
+      const updatedStaffList = parsedStaffList.map((staff) => {
+        // If staff.training is not an array, initialize it
+        if (!Array.isArray(staff.training)) {
+          // Attempt to parse the string if possible
+          try {
+            staff.training = JSON.parse(staff.training);
+            if (!Array.isArray(staff.training)) {
+              staff.training = [];
+            }
+          } catch (error) {
+            staff.training = [];
+          }
+        }
+        return staff;
+      });
+      setStaffList(updatedStaffList);
     }
   }, []);
 
-  useEffect(() => {
-    // Save staff data to local storage whenever it changes
-    localStorage.setItem('staffList', JSON.stringify(staffList));
-  }, [staffList]);
+  // Function to save to local storage
+  const saveToLocalStorage = (updatedList: StaffMember[]) => {
+    localStorage.setItem('staffList', JSON.stringify(updatedList));
+  };
 
   const deleteStaff = (id: string) => {
     const updatedList = staffList.filter((staff) => staff.id !== id);
     setStaffList(updatedList);
+    saveToLocalStorage(updatedList); // Save after deleting
   };
 
   const addStaff = (newStaff: StaffMember) => {
+    // Ensure training is an array
+    if (!Array.isArray(newStaff.training)) {
+      newStaff.training = [];
+    }
+
     // Check if ID already exists
     if (staffList.some((staff) => staff.id === newStaff.id)) {
       alert('A staff member with this ID already exists.');
       return;
     }
-    setStaffList([...staffList, newStaff]);
+    const updatedList = [...staffList, newStaff];
+    setStaffList(updatedList);
+    saveToLocalStorage(updatedList); // Save after adding
   };
 
   return (
@@ -61,41 +96,74 @@ export default function StaffManagement() {
         onClose={() => setIsModalOpen(false)}
         onSave={addStaff}
       />
-      <table className="table-auto mt-8 w-full text-left">
-        <thead>
-          <tr>
-            <th className="px-4 py-2">ID</th>
-            <th className="px-4 py-2">Name</th>
-            <th className="px-4 py-2">Role</th>
-            <th className="px-4 py-2">Qualifications</th>
-            <th className="px-4 py-2">Employment Type</th>
-            <th className="px-4 py-2">Remuneration</th>
-            <th className="px-4 py-2">Training</th>
-            <th className="px-4 py-2">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {staffList.map((staff) => (
-            <tr key={staff.id} className="border-t">
-              <td className="px-4 py-2">{staff.id}</td>
-              <td className="px-4 py-2">{staff.name}</td>
-              <td className="px-4 py-2">{staff.role}</td>
-              <td className="px-4 py-2">{staff.qualifications}</td>
-              <td className="px-4 py-2">{staff.employmentType}</td>
-              <td className="px-4 py-2">{staff.remuneration}</td>
-              <td className="px-4 py-2">{staff.training}</td>
-              <td className="px-4 py-2">
-                <button
-                  onClick={() => deleteStaff(staff.id)}
-                  className="bg-red-500 text-white p-2 rounded"
-                >
-                  Delete
-                </button>
-              </td>
+      <div className="overflow-x-auto w-full mt-8">
+        <table className="table-auto w-full text-left border-collapse">
+          <thead>
+            <tr>
+              <th className="px-4 py-2 text-2xl font-bold bg-blue-900 text-white border-b">
+                ID
+              </th>
+              <th className="px-4 py-2 text-2xl font-bold bg-blue-900 text-white border-b">
+                Name
+              </th>
+              <th className="px-4 py-2 text-2xl font-bold bg-blue-900 text-white border-b">
+                Role
+              </th>
+              <th className="px-4 py-2 text-2xl font-bold bg-blue-900 text-white border-b">
+                Qualifications
+              </th>
+              <th className="px-4 py-2 text-2xl font-bold bg-blue-900 text-white border-b">
+                Employment Type
+              </th>
+              <th className="px-4 py-2 text-2xl font-bold bg-blue-900 text-white border-b">
+                Remuneration
+              </th>
+              <th className="px-4 py-2 text-2xl font-bold bg-blue-900 text-white border-b">
+                Training
+              </th>
+              <th className="px-4 py-2 text-2xl font-bold bg-blue-900 text-white border-b">
+                Actions
+              </th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {staffList.map((staff, rowIndex) => (
+              <tr
+                key={staff.id}
+                className={rowIndex % 2 === 0 ? 'bg-gray-100' : 'bg-white'}
+              >
+                <td className="border px-4 py-2">{staff.id}</td>
+                <td className="border px-4 py-2">{staff.name}</td>
+                <td className="border px-4 py-2">{staff.role}</td>
+                <td className="border px-4 py-2">{staff.qualifications}</td>
+                <td className="border px-4 py-2">{staff.employmentType}</td>
+                <td className="border px-4 py-2">{staff.remuneration}</td>
+                <td className="border px-4 py-2">
+                  {staff.training && staff.training.length > 0 ? (
+                    <ul>
+                      {staff.training.map((course, index) => (
+                        <li key={index}>
+                          {course.courseName} ({course.status})
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    'No training courses'
+                  )}
+                </td>
+                <td className="border px-4 py-2">
+                  <button
+                    onClick={() => deleteStaff(staff.id)}
+                    className="bg-red-500 text-white p-2 rounded"
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </main>
   );
 }
