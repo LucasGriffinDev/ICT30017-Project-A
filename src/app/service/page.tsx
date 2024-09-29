@@ -1,3 +1,5 @@
+// pages/service.js
+
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -123,233 +125,258 @@ export default function ServiceManagement() {
   const timeOptions = generateTimeOptions();
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-around p-24">
-      <h1 className="text-4xl mb-6">Service Management</h1>
+    <main className="flex min-h-screen flex-col items-center p-8">
+      <div className="w-full max-w-[60%] mx-auto">
+        <h1 className="text-4xl font-bold mb-6 text-blue-900 text-center">
+          Service Management
+        </h1>
 
-      {/* Service Catalogue */}
-      <section className="w-full max-w-4xl mb-8 p-4 border border-gray-300 rounded-lg">
-        <h2 className="text-2xl mb-4">Service Catalogue</h2>
+        {/* Service Catalogue */}
+        <section className="mb-12">
+          <h2 className="text-3xl font-bold mb-6">Service Catalogue</h2>
 
-        <div className="grid grid-cols-3 gap-4">
-          {/* Registered Nurse */}
-          <div className="flex flex-col items-center">
-            <img
-              src="/images/serviceImg1.jpg"
-              alt="Registered Nurse"
-              className="w-full h-auto rounded-lg"
-            />
-            <p className="mt-2 text-center">
-              <b>Registered Nurse:</b> <br />
-              Provide comprehensive nursing care, manage medications, monitor
-              health conditions, and develop care plans.
-            </p>
-          </div>
-
-          {/* Personal Care Assistant */}
-          <div className="flex flex-col items-center">
-            <img
-              src="/images/serviceImg2.jpg"
-              alt="Personal Care Assistant"
-              className="w-full h-auto rounded-lg"
-            />
-            <p className="mt-2 text-center">
-              <b>Personal Care Assistants:</b> <br />
-              Assist with daily living activities such as bathing, dressing,
-              grooming, and mobility.
-            </p>
-          </div>
-
-          {/* Activity Coordinator */}
-          <div className="flex flex-col items-center">
-            <img
-              src="/images/serviceImg3.jpg"
-              alt="Activity Coordinator"
-              className="w-full h-auto rounded-lg"
-            />
-            <p className="mt-2 text-center">
-              <b>Activity Coordinators:</b> <br />
-              Organize and facilitate social, recreational, and therapeutic
-              activities for residents.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Booking Form */}
-      <section className="w-full max-w-4xl mb-8 p-4 border border-gray-300 rounded-lg">
-        <h2 className="text-2xl mb-4">Book a Service</h2>
-        <form onSubmit={handleBooking}>
-          {errors.length > 0 && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
-              <strong className="font-bold">Error:</strong>
-              <ul className="list-disc pl-5">
-                {errors.map((error, index) => (
-                  <li key={index}>{error}</li>
-                ))}
-              </ul>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Registered Nurse */}
+            <div className="flex flex-col items-center">
+              <img
+                src="/images/serviceImg1.jpg"
+                alt="Registered Nurse"
+                className="w-full h-auto rounded-lg"
+              />
+              <p className="mt-4 text-center">
+                <strong>Registered Nurse:</strong> <br />
+                Provide comprehensive nursing care, manage medications, monitor
+                health conditions, and develop care plans.
+              </p>
             </div>
-          )}
-          <div className="mb-4">
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="service"
-            >
-              Service
-            </label>
-            <select
-              id="service"
-              value={service}
-              onChange={(e) => setService(e.target.value)}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            >
-              <option value="">Select a service</option>
-              <option value="Registered Nurse">Registered Nurse</option>
-              <option value="Personal Care Assistant">
-                Personal Care Assistant
-              </option>
-              <option value="Activity Coordinator">Activity Coordinator</option>
-            </select>
-          </div>
-          <div className="mb-4">
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="staff"
-            >
-              Staff
-            </label>
-            <select
-              id="staff"
-              value={staff}
-              onChange={(e) => setStaff(e.target.value)}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            >
-              <option value="">Select a staff member</option>
-              {staffOptions.map((staff, index) => (
-                <option key={index} value={staff}>
-                  {staff}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="mb-4">
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="date"
-            >
-              Date
-            </label>
-            <input
-              type="date"
-              id="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              min={new Date().toISOString().split('T')[0]}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            />
-          </div>
-          <div className="mb-4">
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="startTime"
-            >
-              Start Time
-            </label>
-            <select
-              id="startTime"
-              value={startTime}
-              onChange={(e) => setStartTime(e.target.value)}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            >
-              <option value="">Select a start time</option>
-              {timeOptions.map((time, index) => (
-                <option key={index} value={time}>
-                  {time}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="mb-4">
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="endTime"
-            >
-              End Time
-            </label>
-            <select
-              id="endTime"
-              value={endTime}
-              onChange={(e) => setEndTime(e.target.value)}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            >
-              <option value="">Select an end time</option>
-              {timeOptions.map((time, index) => (
-                <option key={index} value={time}>
-                  {time}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="mb-4">
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="duration"
-            >
-              Duration (hours)
-            </label>
-            <input
-              type="text"
-              id="duration"
-              value={duration}
-              readOnly
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            />
-          </div>
-          <button
-            type="submit"
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-          >
-            Book Service
-          </button>
-        </form>
-      </section>
 
-      {/* Current Bookings */}
-      <section className="w-full max-w-4xl mb-8 p-4 border border-gray-300 rounded-lg">
-        <h2 className="text-2xl mb-4">Current Bookings</h2>
-        <table className="w-full border-collapse">
-          <thead>
-            <tr>
-              <th className="border-b py-2 px-4">Service</th>
-              <th className="border-b py-2 px-4">Date</th>
-              <th className="border-b py-2 px-4">Start Time</th>
-              <th className="border-b py-2 px-4">End Time</th>
-              <th className="border-b py-2 px-4">Duration</th>
-              <th className="border-b py-2 px-4">Staff</th>
-              <th className="border-b py-2 px-4">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {bookings.map((booking, index) => (
-              <tr key={index}>
-                <td className="border-b py-2 px-4">{booking.service}</td>
-                <td className="border-b py-2 px-4">{booking.date}</td>
-                <td className="border-b py-2 px-4">{booking.startTime}</td>
-                <td className="border-b py-2 px-4">{booking.endTime}</td>
-                <td className="border-b py-2 px-4">{booking.duration}</td>
-                <td className="border-b py-2 px-4">{booking.staff}</td>
-                <td className="border-b py-2 px-4">
-                  <button
-                    onClick={() => handleDelete(index)}
-                    className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            {/* Personal Care Assistant */}
+            <div className="flex flex-col items-center">
+              <img
+                src="/images/serviceImg2.jpg"
+                alt="Personal Care Assistant"
+                className="w-full h-auto rounded-lg"
+              />
+              <p className="mt-4 text-center">
+                <strong>Personal Care Assistants:</strong> <br />
+                Assist with daily living activities such as bathing, dressing,
+                grooming, and mobility.
+              </p>
+            </div>
+
+            {/* Activity Coordinator */}
+            <div className="flex flex-col items-center">
+              <img
+                src="/images/serviceImg3.jpg"
+                alt="Activity Coordinator"
+                className="w-full h-auto rounded-lg"
+              />
+              <p className="mt-4 text-center">
+                <strong>Activity Coordinators:</strong> <br />
+                Organize and facilitate social, recreational, and therapeutic
+                activities for residents.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* Booking Form */}
+        <section className="mb-12">
+          <h2 className="text-3xl font-bold mb-6">Book a Service</h2>
+          <form onSubmit={handleBooking} className="space-y-6">
+            {errors.length > 0 && (
+              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
+                <strong className="font-bold">Error:</strong>
+                <ul className="list-disc pl-5">
+                  {errors.map((error, index) => (
+                    <li key={index}>{error}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            <div>
+              <label
+                className="block text-gray-700 font-bold mb-2"
+                htmlFor="service"
+              >
+                Service
+              </label>
+              <select
+                id="service"
+                value={service}
+                onChange={(e) => setService(e.target.value)}
+                className="border rounded w-full py-2 px-3"
+              >
+                <option value="">Select a service</option>
+                <option value="Registered Nurse">Registered Nurse</option>
+                <option value="Personal Care Assistant">
+                  Personal Care Assistant
+                </option>
+                <option value="Activity Coordinator">
+                  Activity Coordinator
+                </option>
+              </select>
+            </div>
+            <div>
+              <label
+                className="block text-gray-700 font-bold mb-2"
+                htmlFor="staff"
+              >
+                Staff
+              </label>
+              <select
+                id="staff"
+                value={staff}
+                onChange={(e) => setStaff(e.target.value)}
+                className="border rounded w-full py-2 px-3"
+              >
+                <option value="">Select a staff member</option>
+                {staffOptions.map((staff, index) => (
+                  <option key={index} value={staff}>
+                    {staff}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label
+                className="block text-gray-700 font-bold mb-2"
+                htmlFor="date"
+              >
+                Date
+              </label>
+              <input
+                type="date"
+                id="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                min={new Date().toISOString().split('T')[0]}
+                className="border rounded w-full py-2 px-3"
+              />
+            </div>
+            <div>
+              <label
+                className="block text-gray-700 font-bold mb-2"
+                htmlFor="startTime"
+              >
+                Start Time
+              </label>
+              <select
+                id="startTime"
+                value={startTime}
+                onChange={(e) => setStartTime(e.target.value)}
+                className="border rounded w-full py-2 px-3"
+              >
+                <option value="">Select a start time</option>
+                {timeOptions.map((time, index) => (
+                  <option key={index} value={time}>
+                    {time}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label
+                className="block text-gray-700 font-bold mb-2"
+                htmlFor="endTime"
+              >
+                End Time
+              </label>
+              <select
+                id="endTime"
+                value={endTime}
+                onChange={(e) => setEndTime(e.target.value)}
+                className="border rounded w-full py-2 px-3"
+              >
+                <option value="">Select an end time</option>
+                {timeOptions.map((time, index) => (
+                  <option key={index} value={time}>
+                    {time}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label
+                className="block text-gray-700 font-bold mb-2"
+                htmlFor="duration"
+              >
+                Duration (hours)
+              </label>
+              <input
+                type="text"
+                id="duration"
+                value={duration}
+                readOnly
+                className="border rounded w-full py-2 px-3 bg-gray-100"
+              />
+            </div>
+            <button
+              type="submit"
+              className="bg-blue-500 text-white font-bold py-2 px-4 rounded"
+            >
+              Book Service
+            </button>
+          </form>
+        </section>
+
+        {/* Current Bookings */}
+        <section className="mb-12">
+          <h2 className="text-3xl font-bold mb-6">Current Bookings</h2>
+          <div className="overflow-x-auto w-full">
+            <table className="table-auto w-full text-left border-collapse">
+              <thead>
+                <tr>
+                  <th className="px-4 py-2 text-xl font-bold bg-blue-900 text-white border-b">
+                    Service
+                  </th>
+                  <th className="px-4 py-2 text-xl font-bold bg-blue-900 text-white border-b">
+                    Date
+                  </th>
+                  <th className="px-4 py-2 text-xl font-bold bg-blue-900 text-white border-b">
+                    Start Time
+                  </th>
+                  <th className="px-4 py-2 text-xl font-bold bg-blue-900 text-white border-b">
+                    End Time
+                  </th>
+                  <th className="px-4 py-2 text-xl font-bold bg-blue-900 text-white border-b">
+                    Duration
+                  </th>
+                  <th className="px-4 py-2 text-xl font-bold bg-blue-900 text-white border-b">
+                    Staff
+                  </th>
+                  <th className="px-4 py-2 text-xl font-bold bg-blue-900 text-white border-b">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {bookings.map((booking, index) => (
+                  <tr
+                    key={index}
+                    className={index % 2 === 0 ? 'bg-gray-100' : 'bg-white'}
                   >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </section>
+                    <td className="border px-4 py-2">{booking.service}</td>
+                    <td className="border px-4 py-2">{booking.date}</td>
+                    <td className="border px-4 py-2">{booking.startTime}</td>
+                    <td className="border px-4 py-2">{booking.endTime}</td>
+                    <td className="border px-4 py-2">{booking.duration}</td>
+                    <td className="border px-4 py-2">{booking.staff}</td>
+                    <td className="border px-4 py-2">
+                      <button
+                        onClick={() => handleDelete(index)}
+                        className="bg-red-500 text-white p-2 rounded"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
     </main>
   );
 }
