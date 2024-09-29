@@ -9,7 +9,6 @@ const DynamicTable: React.FC<DynamicTableProps> = ({ data }) => {
     return <p>No data available</p>;
   }
 
-  // Extract the keys from the first object in the array to determine the columns
   const columns = Object.keys(data[0]);
 
   return (

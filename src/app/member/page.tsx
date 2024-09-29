@@ -1,23 +1,23 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import DynamicTable from '../components/Table'; // Adjust the path based on your folder structure
+import DynamicTable from '../components/DynamicTable';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import Slider from 'react-slick';
 
 export default function FacilityManagement() {
-  const [members, setMembers] = useState<any[]>([]); // Ensure members is initialised as an empty array
+  const [members, setMembers] = useState<any[]>([]);
 
   useEffect(() => {
     const storedData = localStorage.getItem('facilityData');
     if (storedData) {
       try {
         const parsedData = JSON.parse(storedData);
-        setMembers(Array.isArray(parsedData) ? parsedData : []); // Ensure parsedData is an array
+        setMembers(Array.isArray(parsedData) ? parsedData : []);
       } catch (error) {
         console.error('Error parsing stored data:', error);
-        setMembers([]); // Fallback to an empty array if parsing fails
+        setMembers([]);
       }
     } else {
       const dummyData = [
