@@ -1,5 +1,3 @@
-// pages/scheduling.js
-
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -27,7 +25,6 @@ export default function SchedulingManagement() {
   const [duration, setDuration] = useState('');
   const [errors, setErrors] = useState<string[]>([]);
 
-  // Load schedules from local storage on component mount
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const storedSchedules = localStorage.getItem('schedules');
@@ -37,7 +34,6 @@ export default function SchedulingManagement() {
     }
   }, []);
 
-  // Options for days and shifts
   const daysOfWeek = [
     'Monday',
     'Tuesday',
@@ -49,7 +45,6 @@ export default function SchedulingManagement() {
   ];
   const shiftOptions = ['Morning', 'Afternoon', 'Evening', 'Night'];
 
-  // Generate time options at 15-minute intervals
   const generateTimeOptions = () => {
     const times = [];
     for (let i = 0; i < 24; i++) {
@@ -78,7 +73,6 @@ export default function SchedulingManagement() {
 
   const timeOptions = generateTimeOptions();
 
-  // Calculate duration in hours and minutes whenever startTime or endTime changes
   useEffect(() => {
     if (startTime && endTime) {
       const start = new Date(`1970-01-01T${convertTo24Hour(startTime)}:00`);
@@ -105,12 +99,10 @@ export default function SchedulingManagement() {
     }
   }, [startTime, endTime]);
 
-  // Function to add a new schedule
   const addSchedule = (e: React.FormEvent) => {
     e.preventDefault();
     setErrors([]);
 
-    // Basic validation
     if (
       !staffId ||
       !name ||
@@ -124,7 +116,6 @@ export default function SchedulingManagement() {
       return;
     }
 
-    // Validate time order
     const start = new Date(`1970-01-01T${convertTo24Hour(startTime)}:00`);
     const end = new Date(`1970-01-01T${convertTo24Hour(endTime)}:00`);
     if (start >= end) {
@@ -132,7 +123,6 @@ export default function SchedulingManagement() {
       return;
     }
 
-    // Check for time conflicts
     const hasConflict = schedules.some((schedule) => {
       if (schedule.staffId !== staffId || schedule.day !== day) {
         return false;
@@ -173,12 +163,10 @@ export default function SchedulingManagement() {
     const updatedSchedules = [...schedules, newSchedule];
     setSchedules(updatedSchedules);
 
-    // Save to Local Storage
     if (typeof window !== 'undefined') {
       localStorage.setItem('schedules', JSON.stringify(updatedSchedules));
     }
 
-    // Clear form fields
     setStaffId('');
     setName('');
     setPosition('');
@@ -189,12 +177,10 @@ export default function SchedulingManagement() {
     setDuration('');
   };
 
-  // Function to delete a schedule
   const deleteSchedule = (index: number) => {
     const updatedSchedules = schedules.filter((_, i) => i !== index);
     setSchedules(updatedSchedules);
 
-    // Save to Local Storage
     if (typeof window !== 'undefined') {
       localStorage.setItem('schedules', JSON.stringify(updatedSchedules));
     }
@@ -207,7 +193,6 @@ export default function SchedulingManagement() {
           Scheduling Management Page
         </h1>
 
-        {/* Add Schedule Form */}
         <section className="mb-12">
           <h2 className="text-3xl font-bold mb-6">Add Schedule</h2>
           <form onSubmit={addSchedule} className="space-y-4">
@@ -222,7 +207,6 @@ export default function SchedulingManagement() {
               </div>
             )}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Staff ID */}
               <div>
                 <label className="block text-gray-700 font-bold mb-2">
                   Staff ID
@@ -234,7 +218,6 @@ export default function SchedulingManagement() {
                   className="border rounded w-full py-2 px-3"
                 />
               </div>
-              {/* Name */}
               <div>
                 <label className="block text-gray-700 font-bold mb-2">
                   Name
@@ -246,7 +229,6 @@ export default function SchedulingManagement() {
                   className="border rounded w-full py-2 px-3"
                 />
               </div>
-              {/* Position */}
               <div>
                 <label className="block text-gray-700 font-bold mb-2">
                   Position
@@ -258,7 +240,6 @@ export default function SchedulingManagement() {
                   className="border rounded w-full py-2 px-3"
                 />
               </div>
-              {/* Shift */}
               <div>
                 <label className="block text-gray-700 font-bold mb-2">
                   Shift
@@ -276,7 +257,6 @@ export default function SchedulingManagement() {
                   ))}
                 </select>
               </div>
-              {/* Day */}
               <div>
                 <label className="block text-gray-700 font-bold mb-2">
                   Day
@@ -294,7 +274,6 @@ export default function SchedulingManagement() {
                   ))}
                 </select>
               </div>
-              {/* Start Time */}
               <div>
                 <label className="block text-gray-700 font-bold mb-2">
                   Start Time
@@ -312,7 +291,6 @@ export default function SchedulingManagement() {
                   ))}
                 </select>
               </div>
-              {/* End Time */}
               <div>
                 <label className="block text-gray-700 font-bold mb-2">
                   End Time
@@ -330,7 +308,6 @@ export default function SchedulingManagement() {
                   ))}
                 </select>
               </div>
-              {/* Duration */}
               <div>
                 <label className="block text-gray-700 font-bold mb-2">
                   Shift Duration
@@ -351,8 +328,6 @@ export default function SchedulingManagement() {
             </button>
           </form>
         </section>
-
-        {/* Schedule Table */}
         <section>
           <h2 className="text-3xl font-bold mb-6">Current Schedules</h2>
           <div className="overflow-x-auto w-full">

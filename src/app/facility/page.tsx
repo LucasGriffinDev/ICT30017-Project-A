@@ -1,5 +1,3 @@
-// pages/facility.js
-
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -33,7 +31,6 @@ interface Utility {
 }
 
 export default function FacilityManagement() {
-  // Room Management State
   const [rooms, setRooms] = useState<Room[]>([]);
   const [newRoom, setNewRoom] = useState<Room>({
     id: 0,
@@ -43,7 +40,6 @@ export default function FacilityManagement() {
   const [showRoomModal, setShowRoomModal] = useState(false);
   const [isEditingRoom, setIsEditingRoom] = useState(false);
 
-  // Reservation Management State
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [newReservation, setNewReservation] = useState<Reservation>({
     id: 0,
@@ -54,7 +50,6 @@ export default function FacilityManagement() {
   const [showReservationModal, setShowReservationModal] = useState(false);
   const [isEditingReservation, setIsEditingReservation] = useState(false);
 
-  // Maintenance Management State
   const [maintenanceRequests, setMaintenanceRequests] = useState<
     MaintenanceRequest[]
   >([]);
@@ -68,7 +63,6 @@ export default function FacilityManagement() {
   const [showMaintenanceModal, setShowMaintenanceModal] = useState(false);
   const [isEditingMaintenance, setIsEditingMaintenance] = useState(false);
 
-  // Utility Management State
   const [utilities, setUtilities] = useState<Utility[]>([]);
   const [newUtility, setNewUtility] = useState<Utility>({
     id: 0,
@@ -80,31 +74,25 @@ export default function FacilityManagement() {
   const [showUtilityModal, setShowUtilityModal] = useState(false);
   const [isEditingUtility, setIsEditingUtility] = useState(false);
 
-  // Load data from localStorage on component mount
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      // Load rooms
       const storedRooms = localStorage.getItem('rooms');
       if (storedRooms) setRooms(JSON.parse(storedRooms));
 
-      // Load reservations
       const storedReservations = localStorage.getItem('reservations');
       if (storedReservations) setReservations(JSON.parse(storedReservations));
 
-      // Load maintenance requests
       const storedMaintenanceRequests = localStorage.getItem(
         'maintenanceRequests'
       );
       if (storedMaintenanceRequests)
         setMaintenanceRequests(JSON.parse(storedMaintenanceRequests));
 
-      // Load utilities
       const storedUtilities = localStorage.getItem('utilities');
       if (storedUtilities) setUtilities(JSON.parse(storedUtilities));
     }
   }, []);
 
-  // Room Management Functions
   const handleRoomInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -126,7 +114,6 @@ export default function FacilityManagement() {
     setRooms(updatedRooms);
     localStorage.setItem('rooms', JSON.stringify(updatedRooms));
 
-    // Reset form
     setNewRoom({ id: 0, availability: '', occupant: '' });
     setIsEditingRoom(false);
     setShowRoomModal(false);
@@ -144,7 +131,6 @@ export default function FacilityManagement() {
     localStorage.setItem('rooms', JSON.stringify(updatedRooms));
   };
 
-  // Reservation Management Functions
   const handleReservationInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -171,7 +157,6 @@ export default function FacilityManagement() {
     setReservations(updatedReservations);
     localStorage.setItem('reservations', JSON.stringify(updatedReservations));
 
-    // Reset form
     setNewReservation({ id: 0, facility: '', date: '', member: '' });
     setIsEditingReservation(false);
     setShowReservationModal(false);
@@ -191,7 +176,6 @@ export default function FacilityManagement() {
     localStorage.setItem('reservations', JSON.stringify(updatedReservations));
   };
 
-  // Maintenance Management Functions
   const handleMaintenanceInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -226,7 +210,6 @@ export default function FacilityManagement() {
       JSON.stringify(updatedMaintenanceRequests)
     );
 
-    // Reset form
     setNewMaintenanceRequest({ id: 0, room: '', request: '', status: '' });
     setIsEditingMaintenance(false);
     setShowMaintenanceModal(false);
@@ -249,7 +232,6 @@ export default function FacilityManagement() {
     );
   };
 
-  // Utility Management Functions
   const handleUtilityInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -271,7 +253,6 @@ export default function FacilityManagement() {
     setUtilities(updatedUtilities);
     localStorage.setItem('utilities', JSON.stringify(updatedUtilities));
 
-    // Reset form
     setNewUtility({ id: 0, month: '', gas: 0, water: 0, electricity: 0 });
     setIsEditingUtility(false);
     setShowUtilityModal(false);
@@ -289,7 +270,6 @@ export default function FacilityManagement() {
     localStorage.setItem('utilities', JSON.stringify(updatedUtilities));
   };
 
-  // Render Modals
   const renderModal = (
     isVisible: boolean,
     onClose: () => void,
@@ -344,7 +324,6 @@ export default function FacilityManagement() {
           Facility Management
         </h1>
 
-        {/* Room Management Section */}
         <section className="mb-12">
           <h2 className="text-3xl font-bold mb-4">Room Management</h2>
           <button
@@ -452,8 +431,6 @@ export default function FacilityManagement() {
             </table>
           </div>
         </section>
-
-        {/* Reservation Management Section */}
         <section className="mb-12">
           <h2 className="text-3xl font-bold mb-4">Facility Reservations</h2>
           <button
@@ -574,8 +551,6 @@ export default function FacilityManagement() {
             </table>
           </div>
         </section>
-
-        {/* Maintenance Management Section */}
         <section className="mb-12">
           <h2 className="text-3xl font-bold mb-4">Maintenance Requests</h2>
           <button
@@ -707,8 +682,6 @@ export default function FacilityManagement() {
             </table>
           </div>
         </section>
-
-        {/* Utility Management Section */}
         <section>
           <h2 className="text-3xl font-bold mb-4">Utility Management</h2>
           <button

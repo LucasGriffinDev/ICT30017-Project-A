@@ -48,7 +48,6 @@ const AddStaffModal: React.FC<AddStaffModalProps> = ({
     });
   };
 
-  // Training Courses Handlers
   const addTrainingCourse = () => {
     setStaff({
       ...staff,
@@ -82,14 +81,12 @@ const AddStaffModal: React.FC<AddStaffModalProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Validate required fields
     if (!staff.id || !staff.name) {
       alert('ID and Name are required.');
       return;
     }
     onSave(staff);
     onClose();
-    // Reset the form
     setStaff({
       id: '',
       name: '',
@@ -105,16 +102,13 @@ const AddStaffModal: React.FC<AddStaffModalProps> = ({
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50">
-      {/* Modal overlay */}
       <div
         className="fixed inset-0 bg-black opacity-50"
         onClick={onClose}
       ></div>
-      {/* Modal content */}
       <div className="bg-white rounded-lg shadow-lg z-50 w-full max-w-md mx-auto p-6 overflow-y-auto max-h-screen">
         <h2 className="text-xl font-bold mb-4">Add Staff Member</h2>
         <form onSubmit={handleSubmit}>
-          {/* ID */}
           <div className="mb-4">
             <label className="block text-gray-700">ID</label>
             <input
@@ -126,7 +120,6 @@ const AddStaffModal: React.FC<AddStaffModalProps> = ({
               required
             />
           </div>
-          {/* Name */}
           <div className="mb-4">
             <label className="block text-gray-700">Name</label>
             <input
@@ -138,7 +131,6 @@ const AddStaffModal: React.FC<AddStaffModalProps> = ({
               required
             />
           </div>
-          {/* Role */}
           <div className="mb-4">
             <label className="block text-gray-700">Role</label>
             <input
@@ -150,7 +142,6 @@ const AddStaffModal: React.FC<AddStaffModalProps> = ({
               required
             />
           </div>
-          {/* Qualifications */}
           <div className="mb-4">
             <label className="block text-gray-700">Qualifications</label>
             <input
@@ -162,7 +153,6 @@ const AddStaffModal: React.FC<AddStaffModalProps> = ({
               required
             />
           </div>
-          {/* Employment Type */}
           <div className="mb-4">
             <label className="block text-gray-700">Employment Type</label>
             <input
@@ -174,7 +164,6 @@ const AddStaffModal: React.FC<AddStaffModalProps> = ({
               required
             />
           </div>
-          {/* Remuneration */}
           <div className="mb-4">
             <label className="block text-gray-700">Remuneration</label>
             <input
@@ -186,7 +175,6 @@ const AddStaffModal: React.FC<AddStaffModalProps> = ({
               required
             />
           </div>
-          {/* Training Courses */}
           <div className="mb-4">
             <label className="block text-gray-700 font-bold mb-2">
               Training Courses

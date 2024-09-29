@@ -1,18 +1,14 @@
-// pages/staff.js
-
 'use client';
 
 import React, { useState, useEffect } from 'react';
 import AddStaffModal from '../../components/AddStaffModal'; // Adjust the path based on your folder structure
 
-// Define the TrainingCourse type
 type TrainingCourse = {
   courseName: string;
   completionDate: string;
   status: string;
 };
 
-// Update the StaffMember type
 type StaffMember = {
   id: string;
   name: string;
@@ -20,7 +16,7 @@ type StaffMember = {
   qualifications: string;
   employmentType: string;
   remuneration: string;
-  training: TrainingCourse[]; // Changed from string to array of TrainingCourse
+  training: TrainingCourse[];
 };
 
 export default function StaffManagement() {
@@ -28,16 +24,12 @@ export default function StaffManagement() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
-    // Load staff data from local storage when the component mounts
     const storedStaff = localStorage.getItem('staffList');
     if (storedStaff) {
       const parsedStaffList = JSON.parse(storedStaff);
 
-      // Transform the data if necessary
       const updatedStaffList = parsedStaffList.map((staff) => {
-        // If staff.training is not an array, initialize it
         if (!Array.isArray(staff.training)) {
-          // Attempt to parse the string if possible
           try {
             staff.training = JSON.parse(staff.training);
             if (!Array.isArray(staff.training)) {
@@ -53,7 +45,6 @@ export default function StaffManagement() {
     }
   }, []);
 
-  // Function to save to local storage
   const saveToLocalStorage = (updatedList: StaffMember[]) => {
     localStorage.setItem('staffList', JSON.stringify(updatedList));
   };
@@ -61,23 +52,21 @@ export default function StaffManagement() {
   const deleteStaff = (id: string) => {
     const updatedList = staffList.filter((staff) => staff.id !== id);
     setStaffList(updatedList);
-    saveToLocalStorage(updatedList); // Save after deleting
+    saveToLocalStorage(updatedList);
   };
 
   const addStaff = (newStaff: StaffMember) => {
-    // Ensure training is an array
     if (!Array.isArray(newStaff.training)) {
       newStaff.training = [];
     }
 
-    // Check if ID already exists
     if (staffList.some((staff) => staff.id === newStaff.id)) {
       alert('A staff member with this ID already exists.');
       return;
     }
     const updatedList = [...staffList, newStaff];
     setStaffList(updatedList);
-    saveToLocalStorage(updatedList); // Save after adding
+    saveToLocalStorage(updatedList);
   };
 
   return (

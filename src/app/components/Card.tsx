@@ -1,5 +1,3 @@
-// components/Card.js
-
 import Link from 'next/link';
 
 const Card = ({ link, title, description }) => {
