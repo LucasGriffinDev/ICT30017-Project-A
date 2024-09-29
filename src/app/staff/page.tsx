@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import AddStaffModal from '../../components/AddStaffModal'; // Adjust the path based on your folder structure
+import AddStaffModal from '../../components/AddStaffModal';
 
 type TrainingCourse = {
   courseName: string;

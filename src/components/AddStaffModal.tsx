@@ -232,7 +232,7 @@ const AddStaffModal: React.FC<AddStaffModalProps> = ({
               Add Training Course
             </button>
           </div>
-          {/* Buttons */}
+          ={' '}
           <div className="flex justify-end">
             <button
               type="button"

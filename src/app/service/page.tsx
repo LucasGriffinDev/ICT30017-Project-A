@@ -77,8 +77,8 @@ export default function SchedulingManagement() {
     if (startTime && endTime) {
       const start = new Date(`1970-01-01T${convertTo24Hour(startTime)}:00`);
       const end = new Date(`1970-01-01T${convertTo24Hour(endTime)}:00`);
-      const diff = (end.getTime() - start.getTime()) / (1000 * 60); // in minutes
-      setDuration((diff / 60).toFixed(2)); // duration in hours with two decimals
+      const diff = (end.getTime() - start.getTime()) / (1000 * 60);
+      setDuration((diff / 60).toFixed(2));
     } else {
       setDuration('');
     }
@@ -88,7 +88,6 @@ export default function SchedulingManagement() {
     e.preventDefault();
     setErrors([]);
 
-    // Basic validation
     if (
       !staffId ||
       !name ||
@@ -153,7 +152,6 @@ export default function SchedulingManagement() {
       localStorage.setItem('schedules', JSON.stringify(updatedSchedules));
     }
 
-    // Clear form fields
     setStaffId('');
     setName('');
     setPosition('');

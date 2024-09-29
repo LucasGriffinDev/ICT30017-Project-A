@@ -79,7 +79,7 @@ export default function SchedulingManagement() {
       const end = new Date(`1970-01-01T${convertTo24Hour(endTime)}:00`);
       const diffInMs = end.getTime() - start.getTime();
       if (diffInMs > 0) {
-        const totalMinutes = diffInMs / (1000 * 60); // total duration in minutes
+        const totalMinutes = diffInMs / (1000 * 60);
         const hours = Math.floor(totalMinutes / 60);
         const minutes = totalMinutes % 60;
         let durationString = '';
