@@ -180,6 +180,63 @@ export default function ServiceManagement() {
           </div>
         </section>
 
+        {/* Current Bookings */}
+        <section className="mb-12">
+          <h2 className="text-3xl font-bold mb-6">Current Bookings</h2>
+          <div className="overflow-x-auto w-full">
+            <table className="table-auto w-full text-left border-collapse">
+              <thead>
+                <tr>
+                  <th className="px-4 py-2 text-xl font-bold bg-blue-900 text-white border-b">
+                    Service
+                  </th>
+                  <th className="px-4 py-2 text-xl font-bold bg-blue-900 text-white border-b">
+                    Date
+                  </th>
+                  <th className="px-4 py-2 text-xl font-bold bg-blue-900 text-white border-b">
+                    Start Time
+                  </th>
+                  <th className="px-4 py-2 text-xl font-bold bg-blue-900 text-white border-b">
+                    End Time
+                  </th>
+                  <th className="px-4 py-2 text-xl font-bold bg-blue-900 text-white border-b">
+                    Duration
+                  </th>
+                  <th className="px-4 py-2 text-xl font-bold bg-blue-900 text-white border-b">
+                    Staff
+                  </th>
+                  <th className="px-4 py-2 text-xl font-bold bg-blue-900 text-white border-b">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {bookings.map((booking, index) => (
+                  <tr
+                    key={index}
+                    className={index % 2 === 0 ? 'bg-gray-100' : 'bg-white'}
+                  >
+                    <td className="border px-4 py-2">{booking.service}</td>
+                    <td className="border px-4 py-2">{booking.date}</td>
+                    <td className="border px-4 py-2">{booking.startTime}</td>
+                    <td className="border px-4 py-2">{booking.endTime}</td>
+                    <td className="border px-4 py-2">{booking.duration}</td>
+                    <td className="border px-4 py-2">{booking.staff}</td>
+                    <td className="border px-4 py-2">
+                      <button
+                        onClick={() => handleDelete(index)}
+                        className="bg-red-500 text-white p-2 rounded"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+
         {/* Booking Form */}
         <section className="mb-12">
           <h2 className="text-3xl font-bold mb-6">Book a Service</h2>
@@ -318,63 +375,6 @@ export default function ServiceManagement() {
               Book Service
             </button>
           </form>
-        </section>
-
-        {/* Current Bookings */}
-        <section className="mb-12">
-          <h2 className="text-3xl font-bold mb-6">Current Bookings</h2>
-          <div className="overflow-x-auto w-full">
-            <table className="table-auto w-full text-left border-collapse">
-              <thead>
-                <tr>
-                  <th className="px-4 py-2 text-xl font-bold bg-blue-900 text-white border-b">
-                    Service
-                  </th>
-                  <th className="px-4 py-2 text-xl font-bold bg-blue-900 text-white border-b">
-                    Date
-                  </th>
-                  <th className="px-4 py-2 text-xl font-bold bg-blue-900 text-white border-b">
-                    Start Time
-                  </th>
-                  <th className="px-4 py-2 text-xl font-bold bg-blue-900 text-white border-b">
-                    End Time
-                  </th>
-                  <th className="px-4 py-2 text-xl font-bold bg-blue-900 text-white border-b">
-                    Duration
-                  </th>
-                  <th className="px-4 py-2 text-xl font-bold bg-blue-900 text-white border-b">
-                    Staff
-                  </th>
-                  <th className="px-4 py-2 text-xl font-bold bg-blue-900 text-white border-b">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {bookings.map((booking, index) => (
-                  <tr
-                    key={index}
-                    className={index % 2 === 0 ? 'bg-gray-100' : 'bg-white'}
-                  >
-                    <td className="border px-4 py-2">{booking.service}</td>
-                    <td className="border px-4 py-2">{booking.date}</td>
-                    <td className="border px-4 py-2">{booking.startTime}</td>
-                    <td className="border px-4 py-2">{booking.endTime}</td>
-                    <td className="border px-4 py-2">{booking.duration}</td>
-                    <td className="border px-4 py-2">{booking.staff}</td>
-                    <td className="border px-4 py-2">
-                      <button
-                        onClick={() => handleDelete(index)}
-                        className="bg-red-500 text-white p-2 rounded"
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
         </section>
       </div>
     </main>
