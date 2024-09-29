@@ -1,4 +1,7 @@
-import Card from './components/Card';
+// pages/index.js
+
+import Image from 'next/image';
+import Card from './components/card';
 
 export default function Home() {
   const pages = [

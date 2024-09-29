@@ -10,7 +10,6 @@ interface Schedule {
   day: string;
   startTime: string;
   endTime: string;
-  duration: string;
 }
 
 export default function SchedulingManagement() {
@@ -22,7 +21,6 @@ export default function SchedulingManagement() {
   const [day, setDay] = useState('');
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
-  const [duration, setDuration] = useState('');
   const [errors, setErrors] = useState<string[]>([]);
 
   useEffect(() => {
@@ -34,6 +32,7 @@ export default function SchedulingManagement() {
     }
   }, []);
 
+<<<<<<< HEAD
   const daysOfWeek = [
     'Monday',
     'Tuesday',
@@ -99,6 +98,9 @@ export default function SchedulingManagement() {
     }
   }, [startTime, endTime]);
 
+=======
+  // Function to add a new schedule
+>>>>>>> parent of 83629bd (scheduling)
   const addSchedule = (e: React.FormEvent) => {
     e.preventDefault();
     setErrors([]);
@@ -116,6 +118,7 @@ export default function SchedulingManagement() {
       return;
     }
 
+<<<<<<< HEAD
     const start = new Date(`1970-01-01T${convertTo24Hour(startTime)}:00`);
     const end = new Date(`1970-01-01T${convertTo24Hour(endTime)}:00`);
     if (start >= end) {
@@ -123,21 +126,16 @@ export default function SchedulingManagement() {
       return;
     }
 
+=======
+    // Check for time conflicts
+>>>>>>> parent of 83629bd (scheduling)
     const hasConflict = schedules.some((schedule) => {
-      if (schedule.staffId !== staffId || schedule.day !== day) {
-        return false;
-      }
-      const existingStart = new Date(
-        `1970-01-01T${convertTo24Hour(schedule.startTime)}:00`
-      );
-      const existingEnd = new Date(
-        `1970-01-01T${convertTo24Hour(schedule.endTime)}:00`
-      );
-
       return (
-        (start >= existingStart && start < existingEnd) ||
-        (end > existingStart && end <= existingEnd) ||
-        (start <= existingStart && end >= existingEnd)
+        schedule.staffId === staffId &&
+        schedule.day === day &&
+        ((startTime >= schedule.startTime && startTime < schedule.endTime) ||
+          (endTime > schedule.startTime && endTime <= schedule.endTime) ||
+          (startTime <= schedule.startTime && endTime >= schedule.endTime))
       );
     });
 
@@ -157,7 +155,6 @@ export default function SchedulingManagement() {
       day,
       startTime,
       endTime,
-      duration,
     };
 
     const updatedSchedules = [...schedules, newSchedule];
@@ -174,7 +171,6 @@ export default function SchedulingManagement() {
     setDay('');
     setStartTime('');
     setEndTime('');
-    setDuration('');
   };
 
   const deleteSchedule = (index: number) => {
@@ -185,6 +181,18 @@ export default function SchedulingManagement() {
       localStorage.setItem('schedules', JSON.stringify(updatedSchedules));
     }
   };
+
+  // Options for days and shifts
+  const daysOfWeek = [
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+    'Sunday',
+  ];
+  const shiftOptions = ['Morning', 'Afternoon', 'Evening', 'Night'];
 
   return (
     <main className="flex flex-col items-center p-8">
@@ -278,27 +286,23 @@ export default function SchedulingManagement() {
                 <label className="block text-gray-700 font-bold mb-2">
                   Start Time
                 </label>
-                <select
+                <input
+                  type="time"
                   value={startTime}
                   onChange={(e) => setStartTime(e.target.value)}
                   className="border rounded w-full py-2 px-3"
-                >
-                  <option value="">Select a start time</option>
-                  {timeOptions.map((time, index) => (
-                    <option key={index} value={time}>
-                      {time}
-                    </option>
-                  ))}
-                </select>
+                />
               </div>
               <div>
                 <label className="block text-gray-700 font-bold mb-2">
                   End Time
                 </label>
-                <select
+                <input
+                  type="time"
                   value={endTime}
                   onChange={(e) => setEndTime(e.target.value)}
                   className="border rounded w-full py-2 px-3"
+<<<<<<< HEAD
                 >
                   <option value="">Select an end time</option>
                   {timeOptions.map((time, index) => (
@@ -317,6 +321,8 @@ export default function SchedulingManagement() {
                   value={duration}
                   readOnly
                   className="border rounded w-full py-2 px-3 bg-gray-100"
+=======
+>>>>>>> parent of 83629bd (scheduling)
                 />
               </div>
             </div>
@@ -356,9 +362,6 @@ export default function SchedulingManagement() {
                     End Time
                   </th>
                   <th className="px-4 py-2 text-xl font-bold bg-blue-900 text-white border-b">
-                    Duration
-                  </th>
-                  <th className="px-4 py-2 text-xl font-bold bg-blue-900 text-white border-b">
                     Actions
                   </th>
                 </tr>
@@ -376,7 +379,6 @@ export default function SchedulingManagement() {
                     <td className="border px-4 py-2">{schedule.day}</td>
                     <td className="border px-4 py-2">{schedule.startTime}</td>
                     <td className="border px-4 py-2">{schedule.endTime}</td>
-                    <td className="border px-4 py-2">{schedule.duration}</td>
                     <td className="border px-4 py-2">
                       <button
                         onClick={() => deleteSchedule(index)}
@@ -390,7 +392,7 @@ export default function SchedulingManagement() {
                 {schedules.length === 0 && (
                   <tr>
                     <td
-                      colSpan={9}
+                      colSpan={8}
                       className="border px-4 py-2 text-center text-gray-500"
                     >
                       No schedules available.
