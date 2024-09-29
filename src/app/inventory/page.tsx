@@ -1,5 +1,3 @@
-// pages/inventory.js
-
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -17,7 +15,6 @@ interface Item {
   re_order: boolean;
 }
 
-// Default item for form
 const defaultItem: Item = {
   item_id: 0,
   sku: '',
@@ -38,10 +35,8 @@ export default function InventoryManagement() {
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
   const [tooltip, setTooltip] = useState<string | null>(null);
 
-  // State for low stock alerts and reporting
   const [lowStockItems, setLowStockItems] = useState<Item[]>([]);
 
-  // Tooltip texts
   const tooltipText = {
     sku: 'Stock Keeping Unit, a unique identifier for each product.',
     par_level: 'The minimum quantity of the item that should be in stock.',
@@ -58,7 +53,6 @@ export default function InventoryManagement() {
   ];
   const validUnits = ['Each', 'Box', 'Case'];
 
-  // Load data from localStorage on component mount
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const storedItems = localStorage.getItem('inventoryData');
@@ -78,7 +72,6 @@ export default function InventoryManagement() {
     }
   }, []);
 
-  // Update low stock items whenever items change
   useEffect(() => {
     updateLowStockItems(items);
   }, [items]);
@@ -89,60 +82,46 @@ export default function InventoryManagement() {
     setNewItem({ ...newItem, [e.target.name]: e.target.value });
   };
 
-  // Handle form submission
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // Check if the form is valid
     if (validateForm()) {
-      // Calculate the re_order status
       const reOrderStatus = calculateReOrderStatus(newItem);
 
       if (isEditMode) {
-        // Update the item
         updateItem({ ...newItem, re_order: reOrderStatus });
       } else {
-        // Add the item
-        // Calculate the next item_id
         const nextItemId =
           items.length > 0
             ? Math.max(...items.map((item) => item.item_id)) + 1
             : 1;
 
-        // Add the item with the new item_id and calculated re_order status
         addItem({ ...newItem, item_id: nextItemId, re_order: reOrderStatus });
       }
 
-      // Reset the form
       resetForm();
     }
   };
 
-  // Validate the form
   const validateForm = () => {
     let formErrors: { [key: string]: string } = {};
 
-    // SKU validation
     if (!/^[A-Za-z0-9]{3,10}$/.test(newItem.sku)) {
       formErrors.sku = 'SKU must be alphanumeric and 3-10 characters long.';
     }
 
-    // Size validation
     if (newItem.size <= 0) {
       formErrors.size = 'Size must be a positive number.';
     }
 
-    // Par Level validation
     if (newItem.par_level < 0) {
       formErrors.par_level = 'Par Level cannot be negative.';
     }
 
-    // Quantity in Stock validation
     if (newItem.qty_in_stock < 0) {
       formErrors.qty_in_stock = 'Quantity in Stock cannot be negative.';
     }
 
-    // Threshold validation
     if (newItem.threshold < 0) {
       formErrors.threshold = 'Threshold cannot be negative.';
     }
@@ -151,32 +130,27 @@ export default function InventoryManagement() {
     return Object.keys(formErrors).length === 0;
   };
 
-  // Calculate the re_order status
   const calculateReOrderStatus = (item: Item) => {
     return item.qty_in_stock <= item.threshold;
   };
 
-  // Update low stock items
   const updateLowStockItems = (items: Item[]) => {
     const lowStock = items.filter((item) => item.re_order);
     setLowStockItems(lowStock);
   };
 
-  // Add item to the list
   const addItem = (item: Item) => {
     const updatedItems = [...items, item];
     setItems(updatedItems);
     localStorage.setItem('inventoryData', JSON.stringify(updatedItems));
   };
 
-  // Remove item from the list
   const removeItem = (item_id: number) => {
     const updatedItems = items.filter((item) => item.item_id !== item_id);
     setItems(updatedItems);
     localStorage.setItem('inventoryData', JSON.stringify(updatedItems));
   };
 
-  // Function to edit an item
   const editItem = (item_id: number) => {
     setIsEditMode(true);
     const itemToEdit = items.find((item) => item.item_id === item_id);
@@ -187,7 +161,6 @@ export default function InventoryManagement() {
     }
   };
 
-  // Function to update an item
   const updateItem = (updatedItem: Item) => {
     const updatedItems = items.map((item) =>
       item.item_id === updatedItem.item_id ? updatedItem : item
@@ -196,19 +169,16 @@ export default function InventoryManagement() {
     localStorage.setItem('inventoryData', JSON.stringify(updatedItems));
   };
 
-  // Function to reset the form
   const resetForm = () => {
     setIsEditMode(false);
     setNewItem(defaultItem);
     setFormErrors({});
   };
 
-  // Function to toggle the tooltip
   const handleTooltip = (text: string | null) => {
     setTooltip(text);
   };
 
-  // Form for adding new items
   function newItemsForm() {
     return (
       <div className="fixed z-10 inset-0 overflow-y-auto">
@@ -223,7 +193,6 @@ export default function InventoryManagement() {
                   {isEditMode ? 'Edit Item' : 'Add New Item'}
                 </h2>
                 <div className="grid grid-cols-1 gap-4">
-                  {/* SKU */}
                   <div>
                     <label
                       htmlFor="sku"
@@ -246,7 +215,6 @@ export default function InventoryManagement() {
                       </p>
                     )}
                   </div>
-                  {/* Product Name */}
                   <div>
                     <label
                       htmlFor="prod_name"
@@ -264,7 +232,6 @@ export default function InventoryManagement() {
                       className="border rounded w-full py-2 px-3"
                     />
                   </div>
-                  {/* Category */}
                   <div>
                     <label
                       htmlFor="category"
@@ -288,7 +255,6 @@ export default function InventoryManagement() {
                       ))}
                     </select>
                   </div>
-                  {/* Unit */}
                   <div>
                     <label
                       htmlFor="unit"
@@ -312,7 +278,6 @@ export default function InventoryManagement() {
                       ))}
                     </select>
                   </div>
-                  {/* Size */}
                   <div>
                     <label
                       htmlFor="size"
@@ -335,7 +300,6 @@ export default function InventoryManagement() {
                       </p>
                     )}
                   </div>
-                  {/* Par Level */}
                   <div>
                     <label
                       htmlFor="par_level"
@@ -358,7 +322,6 @@ export default function InventoryManagement() {
                       </p>
                     )}
                   </div>
-                  {/* Quantity in Stock */}
                   <div>
                     <label
                       htmlFor="qty_in_stock"
@@ -381,7 +344,6 @@ export default function InventoryManagement() {
                       </p>
                     )}
                   </div>
-                  {/* Threshold */}
                   <div>
                     <label
                       htmlFor="threshold"
@@ -434,10 +396,8 @@ export default function InventoryManagement() {
     );
   }
 
-  // State for form visibility
   const [showForm, setShowForm] = useState(false);
 
-  // Render the components
   return (
     <main className="flex flex-col items-center p-8">
       <div className="w-full max-w-[60%] mx-auto">
@@ -445,7 +405,6 @@ export default function InventoryManagement() {
           Inventory Management
         </h1>
 
-        {/* Stock Level Reporting */}
         <section className="mb-8">
           <h2 className="text-3xl font-bold mb-4">Stock Level Reporting</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -460,7 +419,6 @@ export default function InventoryManagement() {
           </div>
         </section>
 
-        {/* Low Stock Alerts */}
         {lowStockItems.length > 0 && (
           <section className="mb-8">
             <h2 className="text-3xl font-bold mb-4 text-red-600">
@@ -502,7 +460,6 @@ export default function InventoryManagement() {
           </section>
         )}
 
-        {/* Add Item Button */}
         <div className="flex justify-end mb-4">
           <button
             onClick={() => setShowForm(true)}
@@ -514,7 +471,6 @@ export default function InventoryManagement() {
 
         {showForm && newItemsForm()}
 
-        {/* Inventory Table */}
         <section>
           <h2 className="text-3xl font-bold mb-6">Inventory Tracking</h2>
           <div className="overflow-x-auto w-full">

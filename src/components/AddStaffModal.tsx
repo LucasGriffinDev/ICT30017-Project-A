@@ -1,5 +1,3 @@
-// components/AddStaffModal.tsx
-
 'use client';
 
 import React, { useState } from 'react';
@@ -17,7 +15,7 @@ type StaffMember = {
   qualifications: string;
   employmentType: string;
   remuneration: string;
-  training: TrainingCourse[]; // Updated to array of TrainingCourse
+  training: TrainingCourse[];
 };
 
 interface AddStaffModalProps {
@@ -38,7 +36,7 @@ const AddStaffModal: React.FC<AddStaffModalProps> = ({
     qualifications: '',
     employmentType: '',
     remuneration: '',
-    training: [], // Initialize as an empty array
+    training: [],
   });
 
   const handleChange = (
