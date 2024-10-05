@@ -9,6 +9,10 @@ import Slider from 'react-slick';
 export default function FacilityManagement() {
   const [members, setMembers] = useState<any[]>([]);
   const [showModal, setShowModal] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [currentMemberIndex, setCurrentMemberIndex] = useState<number | null>(
+    null
+  );
   const [newMember, setNewMember] = useState({
     personalDetails: {
       name: '',
@@ -21,7 +25,11 @@ export default function FacilityManagement() {
     accessibilityRequirements: [],
   });
 
-  const [newCarePlan, setNewCarePlan] = useState({ date: '', plan: '' });
+  const [newCarePlan, setNewCarePlan] = useState({
+    startDate: '',
+    endDate: '',
+    plan: '',
+  });
   const [newMedication, setNewMedication] = useState({ name: '', dosage: '' });
   const [newFamilyContact, setNewFamilyContact] = useState({
     relation: '',
@@ -53,11 +61,13 @@ export default function FacilityManagement() {
           },
           carePlans: [
             {
-              date: '2024-08-01',
+              startDate: '2024-08-01',
+              endDate: '2024-08-31',
               plan: 'Daily physiotherapy and a balanced diet',
             },
             {
-              date: '2024-08-02',
+              startDate: '2024-09-01',
+              endDate: '2024-09-30',
               plan: 'Weekly mental health check-up and light exercises',
             },
           ],
@@ -101,15 +111,9 @@ export default function FacilityManagement() {
   };
 
   const addNewMember = () => {
+    setIsEditing(false);
     setShowModal(true);
-  };
-
-  const handleFormSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const updatedData = [...members, newMember];
-    saveData(updatedData);
-    setShowModal(false);
-    // Reset newMember state
+    // Reset form state
     setNewMember({
       personalDetails: {
         name: '',
@@ -121,19 +125,68 @@ export default function FacilityManagement() {
       familyContacts: [],
       accessibilityRequirements: [],
     });
-    setNewCarePlan({ date: '', plan: '' });
+    setNewCarePlan({ startDate: '', endDate: '', plan: '' });
     setNewMedication({ name: '', dosage: '' });
     setNewFamilyContact({ relation: '', name: '', contact: '' });
     setNewAccessibilityRequirement({ requirement: '' });
+    setCurrentMemberIndex(null);
+  };
+
+  const editMember = (index: number) => {
+    setIsEditing(true);
+    setCurrentMemberIndex(index);
+    setShowModal(true);
+    const memberToEdit = members[index];
+    setNewMember(JSON.parse(JSON.stringify(memberToEdit))); // Deep copy to avoid state mutation
+  };
+
+  const deleteMember = (index: number) => {
+    const confirmed = window.confirm(
+      'Are you sure you want to delete this member?'
+    );
+    if (confirmed) {
+      const updatedMembers = [...members];
+      updatedMembers.splice(index, 1);
+      saveData(updatedMembers);
+    }
+  };
+
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    let updatedData = [...members];
+    if (isEditing && currentMemberIndex !== null) {
+      updatedData[currentMemberIndex] = newMember;
+    } else {
+      updatedData = [...members, newMember];
+    }
+    saveData(updatedData);
+    setShowModal(false);
+    // Reset form state
+    setNewMember({
+      personalDetails: {
+        name: '',
+        age: '',
+        gender: '',
+      },
+      carePlans: [],
+      medications: [],
+      familyContacts: [],
+      accessibilityRequirements: [],
+    });
+    setNewCarePlan({ startDate: '', endDate: '', plan: '' });
+    setNewMedication({ name: '', dosage: '' });
+    setNewFamilyContact({ relation: '', name: '', contact: '' });
+    setNewAccessibilityRequirement({ requirement: '' });
+    setCurrentMemberIndex(null);
   };
 
   const addCarePlan = () => {
-    if (newCarePlan.date && newCarePlan.plan) {
+    if (newCarePlan.startDate && newCarePlan.endDate && newCarePlan.plan) {
       setNewMember({
         ...newMember,
         carePlans: [...newMember.carePlans, newCarePlan],
       });
-      setNewCarePlan({ date: '', plan: '' });
+      setNewCarePlan({ startDate: '', endDate: '', plan: '' });
     }
   };
 
@@ -212,8 +265,11 @@ export default function FacilityManagement() {
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded w-full max-w-2xl max-h-full overflow-y-auto">
-            <h2 className="text-2xl mb-4">Add New Member</h2>
+            <h2 className="text-2xl mb-4">
+              {isEditing ? 'Edit Member' : 'Add New Member'}
+            </h2>
             <form onSubmit={handleFormSubmit}>
+              {/* Personal Details */}
               <div className="mb-4">
                 <h3 className="text-xl font-semibold">Personal Details</h3>
                 <input
@@ -267,23 +323,54 @@ export default function FacilityManagement() {
               <div className="mb-4">
                 <h3 className="text-xl font-semibold">Care Plans</h3>
                 {newMember.carePlans.map((plan, index) => (
-                  <div key={index} className="mb-2">
-                    {plan.date} - {plan.plan}
+                  <div
+                    key={index}
+                    className="mb-2 flex justify-between items-center"
+                  >
+                    {plan.startDate} to {plan.endDate} - {plan.plan}
+                    <button
+                      type="button"
+                      className="text-red-500"
+                      onClick={() => {
+                        const updatedCarePlans = [...newMember.carePlans];
+                        updatedCarePlans.splice(index, 1);
+                        setNewMember({
+                          ...newMember,
+                          carePlans: updatedCarePlans,
+                        });
+                      }}
+                    >
+                      Remove
+                    </button>
                   </div>
                 ))}
                 <div className="flex mb-2">
                   <input
                     type="date"
-                    className="border p-2 w-1/2 mr-2"
-                    value={newCarePlan.date}
+                    className="border p-2 w-1/3 mr-2"
+                    value={newCarePlan.startDate}
                     onChange={(e) =>
-                      setNewCarePlan({ ...newCarePlan, date: e.target.value })
+                      setNewCarePlan({
+                        ...newCarePlan,
+                        startDate: e.target.value,
+                      })
+                    }
+                  />
+                  <input
+                    type="date"
+                    className="border p-2 w-1/3 mr-2"
+                    value={newCarePlan.endDate}
+                    onChange={(e) =>
+                      setNewCarePlan({
+                        ...newCarePlan,
+                        endDate: e.target.value,
+                      })
                     }
                   />
                   <input
                     type="text"
                     placeholder="Plan"
-                    className="border p-2 w-1/2"
+                    className="border p-2 w-1/3"
                     value={newCarePlan.plan}
                     onChange={(e) =>
                       setNewCarePlan({ ...newCarePlan, plan: e.target.value })
@@ -303,8 +390,25 @@ export default function FacilityManagement() {
               <div className="mb-4">
                 <h3 className="text-xl font-semibold">Medications</h3>
                 {newMember.medications.map((med, index) => (
-                  <div key={index} className="mb-2">
+                  <div
+                    key={index}
+                    className="mb-2 flex justify-between items-center"
+                  >
                     {med.name} - {med.dosage}
+                    <button
+                      type="button"
+                      className="text-red-500"
+                      onClick={() => {
+                        const updatedMeds = [...newMember.medications];
+                        updatedMeds.splice(index, 1);
+                        setNewMember({
+                          ...newMember,
+                          medications: updatedMeds,
+                        });
+                      }}
+                    >
+                      Remove
+                    </button>
                   </div>
                 ))}
                 <div className="flex mb-2">
@@ -346,8 +450,25 @@ export default function FacilityManagement() {
               <div className="mb-4">
                 <h3 className="text-xl font-semibold">Family Contacts</h3>
                 {newMember.familyContacts.map((contact, index) => (
-                  <div key={index} className="mb-2">
+                  <div
+                    key={index}
+                    className="mb-2 flex justify-between items-center"
+                  >
                     {contact.relation} - {contact.name} - {contact.contact}
+                    <button
+                      type="button"
+                      className="text-red-500"
+                      onClick={() => {
+                        const updatedContacts = [...newMember.familyContacts];
+                        updatedContacts.splice(index, 1);
+                        setNewMember({
+                          ...newMember,
+                          familyContacts: updatedContacts,
+                        });
+                      }}
+                    >
+                      Remove
+                    </button>
                   </div>
                 ))}
                 <div className="flex mb-2">
@@ -403,8 +524,27 @@ export default function FacilityManagement() {
                   Accessibility Requirements
                 </h3>
                 {newMember.accessibilityRequirements.map((req, index) => (
-                  <div key={index} className="mb-2">
+                  <div
+                    key={index}
+                    className="mb-2 flex justify-between items-center"
+                  >
                     {req.requirement}
+                    <button
+                      type="button"
+                      className="text-red-500"
+                      onClick={() => {
+                        const updatedRequirements = [
+                          ...newMember.accessibilityRequirements,
+                        ];
+                        updatedRequirements.splice(index, 1);
+                        setNewMember({
+                          ...newMember,
+                          accessibilityRequirements: updatedRequirements,
+                        });
+                      }}
+                    >
+                      Remove
+                    </button>
                   </div>
                 ))}
                 <div className="flex mb-2">
@@ -436,25 +576,7 @@ export default function FacilityManagement() {
                   className="bg-gray-500 text-white px-4 py-2 rounded"
                   onClick={() => {
                     setShowModal(false);
-                    setNewMember({
-                      personalDetails: {
-                        name: '',
-                        age: '',
-                        gender: '',
-                      },
-                      carePlans: [],
-                      medications: [],
-                      familyContacts: [],
-                      accessibilityRequirements: [],
-                    });
-                    setNewCarePlan({ date: '', plan: '' });
-                    setNewMedication({ name: '', dosage: '' });
-                    setNewFamilyContact({
-                      relation: '',
-                      name: '',
-                      contact: '',
-                    });
-                    setNewAccessibilityRequirement({ requirement: '' });
+                    // Reset form state if needed
                   }}
                 >
                   Cancel
@@ -463,7 +585,7 @@ export default function FacilityManagement() {
                   type="submit"
                   className="bg-blue-500 text-white px-4 py-2 rounded"
                 >
-                  Save Member
+                  {isEditing ? 'Update Member' : 'Save Member'}
                 </button>
               </div>
             </form>
@@ -476,9 +598,25 @@ export default function FacilityManagement() {
           {members.map((member, index) => (
             <div key={index} className="p-4">
               <div className="bg-white shadow-lg rounded-lg p-6">
-                <h2 className="text-2xl font-bold mb-4">
-                  {member?.personalDetails.name}
-                </h2>
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-2xl font-bold">
+                    {member?.personalDetails.name}
+                  </h2>
+                  <div className="flex space-x-2">
+                    <button
+                      className="bg-yellow-500 text-white px-4 py-2 rounded"
+                      onClick={() => editMember(index)}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      className="bg-red-500 text-white px-4 py-2 rounded"
+                      onClick={() => deleteMember(index)}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
 
                 <DynamicTable
                   data={[
@@ -495,7 +633,8 @@ export default function FacilityManagement() {
                   <h3 className="text-xl font-semibold">Care Plans:</h3>
                   <DynamicTable
                     data={member.carePlans.map((plan: any) => ({
-                      Date: plan.date,
+                      'Start Date': plan.startDate,
+                      'End Date': plan.endDate,
                       Plan: plan.plan,
                     }))}
                   />
