@@ -41,6 +41,8 @@ export default function FacilityManagement() {
       requirement: '',
     });
 
+  const [role, setRole] = useState('Nurse'); // New state for role selection
+
   useEffect(() => {
     const storedData = localStorage.getItem('facilityData');
     if (storedData) {
@@ -138,6 +140,10 @@ export default function FacilityManagement() {
     setShowModal(true);
     const memberToEdit = members[index];
     setNewMember(JSON.parse(JSON.stringify(memberToEdit))); // Deep copy to avoid state mutation
+    setNewCarePlan({ startDate: '', endDate: '', plan: '' });
+    setNewMedication({ name: '', dosage: '' });
+    setNewFamilyContact({ relation: '', name: '', contact: '' });
+    setNewAccessibilityRequirement({ requirement: '' });
   };
 
   const deleteMember = (index: number) => {
@@ -253,12 +259,22 @@ export default function FacilityManagement() {
           Add New Member
         </button>
 
-        <button
+        {/* <button
           className="bg-red-500 text-white px-4 py-2 rounded"
           onClick={clearData}
         >
           Clear Data
-        </button>
+        </button> */}
+
+        {/* Role Selection Dropdown */}
+        <select
+          value={role}
+          onChange={(e) => setRole(e.target.value)}
+          className="border p-2 rounded"
+        >
+          <option value="Nurse">Nurse</option>
+          <option value="Admin">Admin</option>
+        </select>
       </div>
 
       {/* Modal */}
@@ -386,65 +402,67 @@ export default function FacilityManagement() {
                 </button>
               </div>
 
-              {/* Medications */}
-              <div className="mb-4">
-                <h3 className="text-xl font-semibold">Medications</h3>
-                {newMember.medications.map((med, index) => (
-                  <div
-                    key={index}
-                    className="mb-2 flex justify-between items-center"
-                  >
-                    {med.name} - {med.dosage}
-                    <button
-                      type="button"
-                      className="text-red-500"
-                      onClick={() => {
-                        const updatedMeds = [...newMember.medications];
-                        updatedMeds.splice(index, 1);
-                        setNewMember({
-                          ...newMember,
-                          medications: updatedMeds,
-                        });
-                      }}
+              {/* Medications - Hide if role is Admin */}
+              {role !== 'Admin' && (
+                <div className="mb-4">
+                  <h3 className="text-xl font-semibold">Medications</h3>
+                  {newMember.medications.map((med, index) => (
+                    <div
+                      key={index}
+                      className="mb-2 flex justify-between items-center"
                     >
-                      Remove
-                    </button>
+                      {med.name} - {med.dosage}
+                      <button
+                        type="button"
+                        className="text-red-500"
+                        onClick={() => {
+                          const updatedMeds = [...newMember.medications];
+                          updatedMeds.splice(index, 1);
+                          setNewMember({
+                            ...newMember,
+                            medications: updatedMeds,
+                          });
+                        }}
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  ))}
+                  <div className="flex mb-2">
+                    <input
+                      type="text"
+                      placeholder="Medication Name"
+                      className="border p-2 w-1/2 mr-2"
+                      value={newMedication.name}
+                      onChange={(e) =>
+                        setNewMedication({
+                          ...newMedication,
+                          name: e.target.value,
+                        })
+                      }
+                    />
+                    <input
+                      type="text"
+                      placeholder="Dosage"
+                      className="border p-2 w-1/2"
+                      value={newMedication.dosage}
+                      onChange={(e) =>
+                        setNewMedication({
+                          ...newMedication,
+                          dosage: e.target.value,
+                        })
+                      }
+                    />
                   </div>
-                ))}
-                <div className="flex mb-2">
-                  <input
-                    type="text"
-                    placeholder="Medication Name"
-                    className="border p-2 w-1/2 mr-2"
-                    value={newMedication.name}
-                    onChange={(e) =>
-                      setNewMedication({
-                        ...newMedication,
-                        name: e.target.value,
-                      })
-                    }
-                  />
-                  <input
-                    type="text"
-                    placeholder="Dosage"
-                    className="border p-2 w-1/2"
-                    value={newMedication.dosage}
-                    onChange={(e) =>
-                      setNewMedication({
-                        ...newMedication,
-                        dosage: e.target.value,
-                      })
-                    }
-                  />
+                  <button
+                    type="button"
+                    className="bg-green-500 text-white px-4 py-2 rounded"
+                    onClick={addMedication}
+                  >
+                    Add Medication
+                  </button>
                 </div>
-                <button
-                  type="button"
-                  className="bg-green-500 text-white px-4 py-2 rounded"
-                  onClick={addMedication}
-                >
-                  Add Medication
-                </button>
-              </div>
+              )}
 
               {/* Family Contacts */}
               <div className="mb-4">
@@ -640,15 +658,18 @@ export default function FacilityManagement() {
                   />
                 </div>
 
-                <div className="mt-4">
-                  <h3 className="text-xl font-semibold">Medications:</h3>
-                  <DynamicTable
-                    data={member.medications.map((medication: any) => ({
-                      Name: medication.name,
-                      Dosage: medication.dosage,
-                    }))}
-                  />
-                </div>
+                {/* Medications - Hide if role is Admin */}
+                {role !== 'Admin' && (
+                  <div className="mt-4">
+                    <h3 className="text-xl font-semibold">Medications:</h3>
+                    <DynamicTable
+                      data={member.medications.map((medication: any) => ({
+                        Name: medication.name,
+                        Dosage: medication.dosage,
+                      }))}
+                    />
+                  </div>
+                )}
 
                 <div className="mt-4">
                   <h3 className="text-xl font-semibold">Family Contacts:</h3>
