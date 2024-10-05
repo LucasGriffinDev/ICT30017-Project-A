@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import AddStaffModal from '../../components/AddStaffModal';
 
 type TrainingCourse = {
   courseName: string;
@@ -22,6 +21,19 @@ type StaffMember = {
 export default function StaffManagement() {
   const [staffList, setStaffList] = useState<StaffMember[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [currentStaffIndex, setCurrentStaffIndex] = useState<number | null>(
+    null
+  );
+  const [staff, setStaff] = useState<StaffMember>({
+    id: '',
+    name: '',
+    role: '',
+    qualifications: '',
+    employmentType: '',
+    remuneration: '',
+    training: [],
+  });
 
   useEffect(() => {
     const storedStaff = localStorage.getItem('staffList');
@@ -55,18 +67,107 @@ export default function StaffManagement() {
     saveToLocalStorage(updatedList);
   };
 
-  const addStaff = (newStaff: StaffMember) => {
-    if (!Array.isArray(newStaff.training)) {
-      newStaff.training = [];
-    }
+  const openAddStaffModal = () => {
+    setIsEditing(false);
+    setStaff({
+      id: '',
+      name: '',
+      role: '',
+      qualifications: '',
+      employmentType: '',
+      remuneration: '',
+      training: [],
+    });
+    setIsModalOpen(true);
+  };
 
-    if (staffList.some((staff) => staff.id === newStaff.id)) {
-      alert('A staff member with this ID already exists.');
+  const openEditStaffModal = (index: number) => {
+    setIsEditing(true);
+    setCurrentStaffIndex(index);
+    setStaff({ ...staffList[index] });
+    setIsModalOpen(true);
+  };
+
+  const handleSaveStaff = () => {
+    if (!staff.id || !staff.name) {
+      alert('ID and Name are required.');
       return;
     }
-    const updatedList = [...staffList, newStaff];
+
+    if (!Array.isArray(staff.training)) {
+      staff.training = [];
+    }
+
+    const updatedList = [...staffList];
+    if (isEditing && currentStaffIndex !== null) {
+      updatedList[currentStaffIndex] = staff;
+    } else {
+      if (staffList.some((s) => s.id === staff.id)) {
+        alert('A staff member with this ID already exists.');
+        return;
+      }
+      updatedList.push(staff);
+    }
+
     setStaffList(updatedList);
     saveToLocalStorage(updatedList);
+    setIsModalOpen(false);
+    setStaff({
+      id: '',
+      name: '',
+      role: '',
+      qualifications: '',
+      employmentType: '',
+      remuneration: '',
+      training: [],
+    });
+    setIsEditing(false);
+    setCurrentStaffIndex(null);
+  };
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    setStaff({
+      ...staff,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const addTrainingCourse = () => {
+    setStaff({
+      ...staff,
+      training: [
+        ...staff.training,
+        { courseName: '', completionDate: '', status: '' },
+      ],
+    });
+  };
+
+  const handleTrainingChange = (
+    index: number,
+    field: keyof TrainingCourse,
+    value: string
+  ) => {
+    const updatedTraining = [...staff.training];
+    updatedTraining[index][field] = value;
+    setStaff({
+      ...staff,
+      training: updatedTraining,
+    });
+  };
+
+  const removeTrainingCourse = (index: number) => {
+    const updatedTraining = staff.training.filter((_, i) => i !== index);
+    setStaff({
+      ...staff,
+      training: updatedTraining,
+    });
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    handleSaveStaff();
   };
 
   return (
@@ -76,16 +177,173 @@ export default function StaffManagement() {
           Staff Management
         </h1>
         <button
-          onClick={() => setIsModalOpen(true)}
+          onClick={openAddStaffModal}
           className="mt-4 p-2 bg-blue-500 text-white rounded"
         >
           Add Staff
         </button>
-        <AddStaffModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          onSave={addStaff}
-        />
+
+        {/* Modal */}
+        {isModalOpen && (
+          <div className="fixed inset-0 flex items-center justify-center z-50">
+            <div
+              className="fixed inset-0 bg-black opacity-50"
+              onClick={() => setIsModalOpen(false)}
+            ></div>
+            <div className="bg-white rounded-lg shadow-lg z-50 w-full max-w-md mx-auto p-6 overflow-y-auto max-h-screen">
+              <h2 className="text-xl font-bold mb-4">
+                {isEditing ? 'Edit Staff Member' : 'Add Staff Member'}
+              </h2>
+              <form onSubmit={handleSubmit}>
+                <div className="mb-4">
+                  <label className="block text-gray-700">ID</label>
+                  <input
+                    type="text"
+                    name="id"
+                    value={staff.id}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 border rounded"
+                    required
+                    disabled={isEditing}
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-gray-700">Name</label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={staff.name}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 border rounded"
+                    required
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-gray-700">Role</label>
+                  <input
+                    type="text"
+                    name="role"
+                    value={staff.role}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 border rounded"
+                    required
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-gray-700">Qualifications</label>
+                  <input
+                    type="text"
+                    name="qualifications"
+                    value={staff.qualifications}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 border rounded"
+                    required
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-gray-700">Employment Type</label>
+                  <input
+                    type="text"
+                    name="employmentType"
+                    value={staff.employmentType}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 border rounded"
+                    required
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-gray-700">Remuneration</label>
+                  <input
+                    type="text"
+                    name="remuneration"
+                    value={staff.remuneration}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 border rounded"
+                    required
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-gray-700 font-bold mb-2">
+                    Training Courses
+                  </label>
+                  {staff.training.map((course, index) => (
+                    <div key={index} className="mb-2 border p-2 rounded">
+                      <input
+                        type="text"
+                        placeholder="Course Name"
+                        value={course.courseName}
+                        onChange={(e) =>
+                          handleTrainingChange(
+                            index,
+                            'courseName',
+                            e.target.value
+                          )
+                        }
+                        className="w-full px-3 py-2 border rounded mb-2"
+                      />
+                      <input
+                        type="date"
+                        placeholder="Completion Date"
+                        value={course.completionDate}
+                        onChange={(e) =>
+                          handleTrainingChange(
+                            index,
+                            'completionDate',
+                            e.target.value
+                          )
+                        }
+                        className="w-full px-3 py-2 border rounded mb-2"
+                      />
+                      <select
+                        value={course.status}
+                        onChange={(e) =>
+                          handleTrainingChange(index, 'status', e.target.value)
+                        }
+                        className="w-full px-3 py-2 border rounded mb-2"
+                      >
+                        <option value="">Select Status</option>
+                        <option value="Completed">Completed</option>
+                        <option value="In Progress">In Progress</option>
+                        <option value="Not Started">Not Started</option>
+                      </select>
+                      <button
+                        type="button"
+                        onClick={() => removeTrainingCourse(index)}
+                        className="text-red-500"
+                      >
+                        Remove Course
+                      </button>
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={addTrainingCourse}
+                    className="mt-2 px-4 py-2 bg-green-500 text-white rounded"
+                  >
+                    Add Training Course
+                  </button>
+                </div>
+                <div className="flex justify-end">
+                  <button
+                    type="button"
+                    onClick={() => setIsModalOpen(false)}
+                    className="mr-2 px-4 py-2 bg-gray-300 text-gray-700 rounded"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 bg-blue-500 text-white rounded"
+                  >
+                    {isEditing ? 'Update Staff' : 'Save Staff'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* Staff Table with Edit and Delete Buttons */}
         <div className="overflow-x-auto w-full mt-8">
           <table className="table-auto w-full text-left border-collapse">
             <thead>
@@ -142,15 +400,33 @@ export default function StaffManagement() {
                     )}
                   </td>
                   <td className="border px-4 py-2">
-                    <button
-                      onClick={() => deleteStaff(staff.id)}
-                      className="bg-red-500 text-white p-2 rounded"
-                    >
-                      Delete
-                    </button>
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => openEditStaffModal(rowIndex)}
+                        className="bg-yellow-500 text-white p-2 rounded"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => deleteStaff(staff.id)}
+                        className="bg-red-500 text-white p-2 rounded"
+                      >
+                        Delete
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
+              {staffList.length === 0 && (
+                <tr>
+                  <td
+                    colSpan={8}
+                    className="border px-4 py-2 text-center text-gray-500"
+                  >
+                    No staff members available.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
