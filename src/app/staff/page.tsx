@@ -348,28 +348,28 @@ export default function StaffManagement() {
           <table className="table-auto w-full text-left border-collapse">
             <thead>
               <tr>
-                <th className="px-4 py-2 text-2xl font-bold bg-blue-900 text-white border-b">
+                <th className="px-4 py-2 text-1xl font-bold bg-blue-900 text-white border-b">
                   ID
                 </th>
-                <th className="px-4 py-2 text-2xl font-bold bg-blue-900 text-white border-b">
+                <th className="px-4 py-2 text-1xl font-bold bg-blue-900 text-white border-b">
                   Name
                 </th>
-                <th className="px-4 py-2 text-2xl font-bold bg-blue-900 text-white border-b">
+                <th className="px-4 py-2 text-1xl font-bold bg-blue-900 text-white border-b">
                   Role
                 </th>
-                <th className="px-4 py-2 text-2xl font-bold bg-blue-900 text-white border-b">
+                <th className="px-4 py-2 text-1xl font-bold bg-blue-900 text-white border-b">
                   Qualifications
                 </th>
-                <th className="px-4 py-2 text-2xl font-bold bg-blue-900 text-white border-b">
+                <th className="px-4 py-2 text-1xl font-bold bg-blue-900 text-white border-b">
                   Employment Type
                 </th>
-                <th className="px-4 py-2 text-2xl font-bold bg-blue-900 text-white border-b">
+                <th className="px-4 py-2 text-1xl font-bold bg-blue-900 text-white border-b">
                   Remuneration
                 </th>
-                <th className="px-4 py-2 text-2xl font-bold bg-blue-900 text-white border-b">
+                <th className="px-4 py-2 text-1xl font-bold bg-blue-900 text-white border-b">
                   Training
                 </th>
-                <th className="px-4 py-2 text-2xl font-bold bg-blue-900 text-white border-b">
+                <th className="px-4 py-2 text-1xl font-bold bg-blue-900 text-white border-b">
                   Actions
                 </th>
               </tr>
