@@ -477,37 +477,37 @@ export default function InventoryManagement() {
             <table className="table-auto w-full text-left border-collapse">
               <thead>
                 <tr>
-                  <th className="px-4 py-2 text-xl font-bold bg-blue-900 text-white border-b">
+                  <th className="px-4 py-2 text-l font-bold bg-blue-900 text-white border-b">
                     Item ID
                   </th>
-                  <th className="px-4 py-2 text-xl font-bold bg-blue-900 text-white border-b">
+                  <th className="px-4 py-2 text-l font-bold bg-blue-900 text-white border-b">
                     SKU
                   </th>
-                  <th className="px-4 py-2 text-xl font-bold bg-blue-900 text-white border-b">
+                  <th className="px-4 py-2 text-l font-bold bg-blue-900 text-white border-b">
                     Product Name
                   </th>
-                  <th className="px-4 py-2 text-xl font-bold bg-blue-900 text-white border-b">
+                  <th className="px-4 py-2 text-l font-bold bg-blue-900 text-white border-b">
                     Category
                   </th>
-                  <th className="px-4 py-2 text-xl font-bold bg-blue-900 text-white border-b">
+                  <th className="px-4 py-2 text-l font-bold bg-blue-900 text-white border-b">
                     Unit
                   </th>
-                  <th className="px-4 py-2 text-xl font-bold bg-blue-900 text-white border-b">
+                  <th className="px-4 py-2 text-l font-bold bg-blue-900 text-white border-b">
                     Size
                   </th>
-                  <th className="px-4 py-2 text-xl font-bold bg-blue-900 text-white border-b">
+                  <th className="px-4 py-2 text-l font-bold bg-blue-900 text-white border-b">
                     Par Level
                   </th>
-                  <th className="px-4 py-2 text-xl font-bold bg-blue-900 text-white border-b">
+                  <th className="px-4 py-2 text-l font-bold bg-blue-900 text-white border-b">
                     Qty in Stock
                   </th>
-                  <th className="px-4 py-2 text-xl font-bold bg-blue-900 text-white border-b">
+                  <th className="px-4 py-2 text-l font-bold bg-blue-900 text-white border-b">
                     Threshold
                   </th>
-                  <th className="px-4 py-2 text-xl font-bold bg-blue-900 text-white border-b">
+                  <th className="px-4 py-2 text-l font-bold bg-blue-900 text-white border-b">
                     Re-order
                   </th>
-                  <th className="px-4 py-2 text-xl font-bold bg-blue-900 text-white border-b">
+                  <th className="px-4 py-2 text-l font-bold bg-blue-900 text-white border-b">
                     Actions
                   </th>
                 </tr>
